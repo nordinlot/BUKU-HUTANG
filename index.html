@@ -520,70 +520,6 @@
         const FREE_TRIAL_LIMIT = 3;
         let trialsUsed = parseInt(localStorage.getItem('bh_trials_used') || '0', 10);
 
-        // Generate a sample receipt image DataURL for initial sample data
-        function createSampleReceiptDataUrl() {
-            const c = document.createElement('canvas');
-            c.width = 400;
-            c.height = 240;
-            const ctx = c.getContext('2d');
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillRect(0, 0, 400, 240);
-            ctx.strokeStyle = '#10b981';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(12, 12, 376, 216);
-            ctx.fillStyle = '#059669';
-            ctx.font = 'bold 20px Inter, sans-serif';
-            ctx.fillText('RESIT PEMINDAHAN DUITNOW', 40, 58);
-            ctx.fillStyle = '#334155';
-            ctx.font = '14px Inter, sans-serif';
-            ctx.fillText('Penerima: Ahmad Albab bin Kassim', 40, 100);
-            ctx.fillText('Jumlah: RM 450.00', 40, 130);
-            ctx.fillText('Rujukan: Pinjaman Baiki Kereta', 40, 160);
-            ctx.fillStyle = '#64748b';
-            ctx.font = '12px Inter, sans-serif';
-            ctx.fillText('Status: BERJAYA • ID: DN20261110MY', 40, 198);
-            return c.toDataURL('image/png');
-        }
-
-        // Pre-populated sample records demonstrating both categories
-        function getDefaultSampleRecords() {
-            return [
-                {
-                    id: 'sample_1',
-                    direction: 'OWED_TO_ME', // Siapa Hutang Saya
-                    name: 'Ahmad Albab',
-                    phone: '0123456789',
-                    amount: 450.00,
-                    paid: 150.00,
-                    date: '2026-11-10',
-                    dueDate: '2026-12-05',
-                    note: 'Pinjam duit baiki kereta & tukar bateri',
-                    attachment: {
-                        name: 'Resit_DuitNow_Ahmad.png',
-                        type: 'image/png',
-                        size: '24.5 KB',
-                        dataUrl: createSampleReceiptDataUrl()
-                    },
-                    createdAt: Date.now() - 86400000 * 5,
-                    updatedAt: Date.now() - 86400000 * 2
-                },
-                {
-                    id: 'sample_2',
-                    direction: 'I_OWE', // Saya Hutang Siapa
-                    name: 'Kedai Runcit Pak Ali',
-                    phone: '0198765432',
-                    amount: 180.00,
-                    paid: 50.00,
-                    date: '2026-11-15',
-                    dueDate: '2026-11-30',
-                    note: 'Barang dapur & tong gas bulan November',
-                    attachment: null,
-                    createdAt: Date.now() - 86400000 * 3,
-                    updatedAt: Date.now() - 86400000 * 1
-                }
-            ];
-        }
-
         // Generate Dynamic High-Res App Icon via Canvas for iOS/Android Home Screen
         function generateAppIcon() {
             const canvas = document.createElement('canvas');
@@ -826,15 +762,24 @@
         }
 
         function loadLocalRecords() {
-            const initialized = localStorage.getItem('bh_initialized_v2');
-            const raw = localStorage.getItem('bh_records_guest');
-            if (!initialized && !raw) {
-                records = getDefaultSampleRecords();
-                localStorage.setItem('bh_initialized_v2', 'true');
-                saveLocalRecords();
-            } else {
-                records = raw ? JSON.parse(raw).map(r => ({ direction: 'OWED_TO_ME', ...r })) : [];
+            // Clean up any legacy sample records if present so app starts completely empty
+            if (!localStorage.getItem('bh_clean_start_v3')) {
+                localStorage.removeItem('bh_initialized_v2');
+                const existingRaw = localStorage.getItem('bh_records_guest');
+                if (existingRaw) {
+                    try {
+                        const parsed = JSON.parse(existingRaw);
+                        const filteredUserOnly = parsed.filter(r => r.id !== 'sample_1' && r.id !== 'sample_2');
+                        localStorage.setItem('bh_records_guest', JSON.stringify(filteredUserOnly));
+                    } catch (e) {
+                        localStorage.removeItem('bh_records_guest');
+                    }
+                }
+                localStorage.setItem('bh_clean_start_v3', 'true');
             }
+
+            const raw = localStorage.getItem('bh_records_guest');
+            records = raw ? JSON.parse(raw).map(r => ({ direction: 'OWED_TO_ME', ...r })) : [];
             renderRecords();
             updateLicenseUI();
         }
@@ -1292,8 +1237,8 @@
                         <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center text-2xl">
                             <i class="fa-solid fa-folder-open"></i>
                         </div>
-                        <h3 class="font-bold text-slate-800 dark:text-slate-200">Tiada Rekod Hutang Dalam Kategori Ini</h3>
-                        <p class="text-xs text-slate-500 max-w-xs mx-auto">Klik butang <strong>Tambah Rekod</strong> untuk merekod sama ada orang berhutang dengan anda atau anda berhutang dengan orang.</p>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200">Tiada Rekod Hutang Lagi</h3>
+                        <p class="text-xs text-slate-500 max-w-xs mx-auto">Klik butang <strong>Tambah Rekod</strong> untuk mula merekod sama ada <em>Siapa Hutang Saya</em> atau <em>Saya Hutang Siapa</em>.</p>
                     </div>`;
                 return;
             }
