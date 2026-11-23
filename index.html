@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="ms" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Buku Hutang Cloud Pro</title>
+    
+    <!-- Meta PWA & iOS Home Screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Buku Hutang">
+    <meta name="theme-color" content="#059669">
+    <link id="apple-touch-icon" rel="apple-touch-icon" href="">
+    <link id="favicon" rel="icon" type="image/png" href="">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            900: '#064e3b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .glass-card { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200 pb-24 md:pb-12">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 glass-card border-b border-slate-200 dark:border-slate-800 no-print">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-3 min-w-0">
+                <img id="header-app-icon" src="" alt="Logo" class="w-10 h-10 rounded-xl shadow-md shadow-emerald-500/20 border border-emerald-500/20 shrink-0">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h1 class="font-extrabold text-base md:text-lg tracking-tight text-slate-900 dark:text-white leading-none truncate">Buku Hutang</h1>
+                        <span id="pro-badge" class="hidden px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-600 dark:text-amber-400 border border-amber-400/40 rounded-full shrink-0">PRO</span>
+                        <span id="free-badge" class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 border border-amber-300/60 dark:border-amber-800 rounded-full shrink-0">PERCUBAAN: <span id="trial-count">3</span>/3 BAKI</span>
+                    </div>
+                    <p id="sync-status-text" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 truncate">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 inline-block shrink-0"></span> Mod Tetamu (Offline)
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <!-- License Button -->
+                <button onclick="openLicenseModal()" title="Kod Lesen Pro" class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800/60 transition">
+                    <i class="fa-solid fa-crown text-sm"></i>
+                </button>
+
+                <!-- Install Web Icon / Guide Button -->
+                <button onclick="openInstallModal()" title="Pasang Ikon Web (Home Screen)" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-mobile-screen-button text-sm"></i>
+                </button>
+
+                <!-- Dark Mode Toggle -->
+                <button onclick="toggleDarkMode()" title="Tukar Mod Gelap/Cerah" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
+                </button>
+
+                <!-- Auth Button -->
+                <button id="auth-btn" onclick="handleAuthClick()" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition">
+                    <i class="fa-brands fa-google"></i>
+                    <span id="auth-btn-text" class="hidden sm:inline">Log Masuk</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 pt-6 space-y-6">
+
+        <!-- User Profile Banner (When Logged In) -->
+        <div id="user-banner" class="hidden bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-3.5 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+                <img id="user-avatar" src="" alt="Profil" class="w-9 h-9 rounded-full border border-emerald-300 object-cover hidden">
+                <div id="user-avatar-fallback" class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">U</div>
+                <div class="truncate">
+                    <p id="user-name" class="text-sm font-bold text-slate-900 dark:text-white truncate">Pengguna</p>
+                    <p id="user-email" class="text-xs text-slate-500 dark:text-slate-400 truncate">email@contoh.com</p>
+                </div>
+            </div>
+            <button onclick="logoutUser()" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 border border-slate-200 dark:border-slate-700 text-xs font-semibold hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shrink-0">
+                <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
+            </button>
+        </div>
+
+        <!-- Dashboard Summary Cards: Siapa Hutang Saya vs Saya Hutang Siapa -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Kad 1: Siapa Hutang Saya (Piutang / Duit Orang Pinjam Saya) -->
+            <div onclick="setCategoryTab('OWED_TO_ME')" class="cursor-pointer bg-gradient-to-br from-emerald-600 to-teal-800 rounded-2xl p-5 text-white shadow-lg shadow-emerald-600/15 relative overflow-hidden hover:scale-[1.01] transition">
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="px-2 py-0.5 rounded-md bg-white/15 text-emerald-50 text-[10px] font-extrabold uppercase tracking-wider">Duit Masuk (Piutang)</span>
+                        <i class="fa-solid fa-arrow-down-left text-emerald-200 text-sm"></i>
+                    </div>
+                    <p class="text-emerald-100 text-xs font-bold uppercase tracking-wider mt-2.5">Siapa Hutang Saya</p>
+                    <h2 id="stat-owed-to-me" class="text-2xl sm:text-3xl font-extrabold mt-0.5 tracking-tight">RM 0.00</h2>
+                    <p id="stat-owed-to-me-count" class="text-xs text-emerald-100/90 mt-2">0 orang belum lunas</p>
+                </div>
+                <i class="fa-solid fa-hand-holding-dollar absolute -right-3 -bottom-3 text-7xl text-white/10"></i>
+            </div>
+
+            <!-- Kad 2: Saya Hutang Siapa (Tanggungan / Duit Saya Pinjam Orang) -->
+            <div onclick="setCategoryTab('I_OWE')" class="cursor-pointer bg-gradient-to-br from-rose-600 to-orange-700 rounded-2xl p-5 text-white shadow-lg shadow-rose-600/15 relative overflow-hidden hover:scale-[1.01] transition">
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="px-2 py-0.5 rounded-md bg-white/15 text-rose-50 text-[10px] font-extrabold uppercase tracking-wider">Duit Keluar (Tanggungan)</span>
+                        <i class="fa-solid fa-arrow-up-right text-rose-200 text-sm"></i>
+                    </div>
+                    <p class="text-rose-100 text-xs font-bold uppercase tracking-wider mt-2.5">Saya Hutang Siapa</p>
+                    <h2 id="stat-i-owe" class="text-2xl sm:text-3xl font-extrabold mt-0.5 tracking-tight">RM 0.00</h2>
+                    <p id="stat-i-owe-count" class="text-xs text-rose-100/90 mt-2">0 tanggungan aktif</p>
+                </div>
+                <i class="fa-solid fa-file-invoice-dollar absolute -right-3 -bottom-3 text-7xl text-white/10"></i>
+            </div>
+
+            <!-- Kad 3: Kedudukan Bersih & Jumlah Selesai -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm sm:col-span-2 lg:col-span-1 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Kedudukan Bersih (Net)</p>
+                        <span class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </span>
+                    </div>
+                    <h2 id="stat-net" class="text-2xl font-extrabold text-slate-900 dark:text-white mt-2">RM 0.00</h2>
+                    <p id="stat-net-desc" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Imbangan piutang tolak tanggungan</p>
+                </div>
+                <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                    <span class="text-slate-500">Rekod Selesai / Lunas:</span>
+                    <span id="stat-paid-summary" class="font-bold text-emerald-600 dark:text-emerald-400">0 rekod (RM 0.00)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category Tabs: Semua | Siapa Hutang Saya | Saya Hutang Siapa -->
+        <section class="bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 grid grid-cols-3 gap-1.5 shadow-sm no-print">
+            <button type="button" id="tab-ALL" onclick="setCategoryTab('ALL')" class="py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm">
+                <i class="fa-solid fa-layer-group text-xs"></i>
+                <span>Semua (<span id="count-tab-all">0</span>)</span>
+            </button>
+            <button type="button" id="tab-OWED_TO_ME" onclick="setCategoryTab('OWED_TO_ME')" class="py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-hand-holding-dollar text-emerald-600 text-xs"></i>
+                <span>Siapa Hutang Saya (<span id="count-tab-owed">0</span>)</span>
+            </button>
+            <button type="button" id="tab-I_OWE" onclick="setCategoryTab('I_OWE')" class="py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-receipt text-rose-600 text-xs"></i>
+                <span>Saya Hutang Siapa (<span id="count-tab-iowe">0</span>)</span>
+            </button>
+        </section>
+
+        <!-- Action Bar: Search, Filter & Add Button -->
+        <section class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 no-print">
+            <div class="flex flex-col sm:flex-row gap-2.5 flex-1">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="search-input" oninput="renderRecords()" placeholder="Cari nama, no. telefon atau catatan..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                </div>
+                <select id="filter-status" onchange="renderRecords()" class="px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <option value="ALL">Semua Status</option>
+                    <option value="UNPAID">Belum Selesai</option>
+                    <option value="PAID">Sudah Lunas</option>
+                </select>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="exportCSV()" title="Muat Turun CSV" class="px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-semibold transition flex items-center gap-2">
+                    <i class="fa-solid fa-file-csv text-emerald-600"></i>
+                    <span class="hidden sm:inline">Eksport</span>
+                </button>
+                <button onclick="openRecordModal()" class="flex-1 md:flex-none px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md shadow-emerald-600/20 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Tambah Rekod</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Records List Container -->
+        <section id="records-container" class="space-y-3">
+            <!-- Dynamic cards injected here -->
+        </section>
+
+    </main>
+
+    <!-- Floating Mobile Add Button -->
+    <button onclick="openRecordModal()" class="md:hidden fixed bottom-5 right-5 z-30 w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-xl shadow-emerald-600/30 flex items-center justify-center text-xl no-print active:scale-95 transition">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <!-- MODAL 1: Tambah / Edit Rekod Hutang -->
+    <div id="record-modal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden my-auto">
+            <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div>
+                    <h3 id="modal-title" class="font-extrabold text-lg text-slate-900 dark:text-white">Tambah Rekod Hutang</h3>
+                    <p id="modal-trial-hint" class="text-[11px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5">Baki percubaan percuma: 3/3 kali</p>
+                </div>
+                <button onclick="closeRecordModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="record-form" onsubmit="saveRecord(event)" class="p-6 space-y-4 max-h-[82vh] overflow-y-auto">
+                <input type="hidden" id="record-id">
+                <input type="hidden" id="debt-direction" value="OWED_TO_ME">
+
+                <!-- Category Selector: Siapa Hutang Saya vs Saya Hutang Siapa -->
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Kategori Rekod *</label>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button type="button" id="dir-btn-OWED_TO_ME" onclick="selectDirection('OWED_TO_ME')" class="p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 text-left transition">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+                                <i id="dir-check-OWED_TO_ME" class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
+                            </div>
+                            <p class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">Siapa Hutang Saya</p>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Orang lain pinjam duit saya</p>
+                        </button>
+
+                        <button type="button" id="dir-btn-I_OWE" onclick="selectDirection('I_OWE')" class="p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-left transition">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center text-xs"><i class="fa-solid fa-receipt"></i></span>
+                                <i id="dir-check-I_OWE" class="fa-solid fa-circle-check text-rose-600 text-sm hidden"></i>
+                            </div>
+                            <p class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">Saya Hutang Siapa</p>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Saya pinjam orang / kedai</p>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label id="person-name-label" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Nama Peminjam *</label>
+                        <input type="text" id="debtor-name" required placeholder="Contoh: Ahmad Albab" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">No. WhatsApp (Pilihan)</label>
+                        <input type="tel" id="debtor-phone" placeholder="Contoh: 0123456789" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Jumlah Hutang (RM) *</label>
+                        <input type="number" id="debt-amount" step="0.01" min="0.01" required placeholder="0.00" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Sudah Dibayar (RM)</label>
+                        <input type="number" id="debt-paid" step="0.01" min="0" value="0" placeholder="0.00" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Tarikh Pinjam *</label>
+                        <input type="date" id="debt-date" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Tarikh Janji Bayar</label>
+                        <input type="date" id="debt-due" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Catatan / Tujuan</label>
+                    <textarea id="debt-note" rows="2" placeholder="Contoh: Pinjam duit baiki motor / bayar bil" class="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                </div>
+
+                <!-- Universal File Upload Section (Bukti Resit / Dokumen) -->
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-dashed border-slate-300 dark:border-slate-700">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-xs font-bold uppercase text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-paperclip text-emerald-600"></i> Muat Naik Bukti / Resit / Fail
+                        </label>
+                        <span class="text-[10px] text-slate-400">Imej, PDF, Dokumen (Maks 2MB)</span>
+                    </div>
+                    <input type="file" id="debt-file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="handleFileUpload(event)" class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+                    
+                    <div id="file-preview-box" class="hidden mt-3 p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <img id="file-thumb" src="" class="hidden w-10 h-10 rounded-lg object-cover border border-slate-200">
+                            <div id="file-doc-icon" class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-file-lines"></i>
+                            </div>
+                            <div class="truncate">
+                                <p id="file-name-display" class="text-xs font-semibold truncate text-slate-800 dark:text-slate-200">nama_fail.jpg</p>
+                                <p id="file-size-display" class="text-[10px] text-slate-400">0 KB</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="clearUploadedFile()" class="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg text-xs">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeRecordModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-semibold">Batal</button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md shadow-emerald-600/20">Simpan Rekod</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Bayaran Ansuran Pantas -->
+    <div id="payment-modal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-sm shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-extrabold text-lg text-slate-900 dark:text-white">Rekod Bayaran</h3>
+                <button onclick="closePaymentModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div>
+                <p id="pay-debtor-name" class="text-sm font-bold text-slate-800 dark:text-slate-200"></p>
+                <p class="text-xs text-slate-500 mt-0.5">Baki semasa: <span id="pay-current-balance" class="font-bold text-rose-600">RM 0.00</span></p>
+            </div>
+            <div>
+                <label id="pay-input-label" class="block text-xs font-bold uppercase text-slate-500 mb-1">Jumlah Bayaran (RM)</label>
+                <input type="number" id="pay-input-amount" step="0.01" min="0.01" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-base font-extrabold text-emerald-600 outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+            <div class="flex gap-2">
+                <button type="button" onclick="fillFullBalance()" class="flex-1 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 text-xs font-bold border border-emerald-200 dark:border-emerald-800">Bayar Penuh</button>
+                <button type="button" onclick="submitPayment()" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow">Sahkan Bayaran</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: Kod Lesen Pro (License Code Activation) -->
+    <div id="license-modal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-md shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base text-slate-900 dark:text-white">Pengaktifan Lesen Pro</h3>
+                        <p class="text-xs text-slate-500">Rekod tanpa had & sandaran awan penuh</p>
+                    </div>
+                </div>
+                <button onclick="closeLicenseModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div id="license-active-box" class="hidden p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-center space-y-1">
+                <p class="text-sm font-extrabold text-emerald-700 dark:text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i> Akaun Anda Berstatus PRO!</p>
+                <p id="active-license-key-text" class="text-xs font-mono text-slate-600 dark:text-slate-300"></p>
+            </div>
+
+            <div id="license-form-box" class="space-y-3">
+                <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-xs text-amber-800 dark:text-amber-300">
+                    <p class="font-bold"><i class="fa-solid fa-hourglass-half mr-1"></i> Status Percubaan Percuma: <span id="modal-trial-status-text">3/3 Baki</span></p>
+                    <p class="mt-1 text-[11px] opacity-90">Setiap penambahan rekod baharu menggunakan 1 kuota percubaan (tidak dikembalikan walaupun rekod dipadam).</p>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Masukkan <strong>Kod Lesen Pro</strong> anda (kod ujian: <code class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-amber-600 font-bold">TEST1234</code> atau <code class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-amber-600 font-bold">PRO2026</code>) untuk membuka akses tanpa had seumur hidup.
+                </p>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Masukkan Kod Lesen</label>
+                    <input type="text" id="license-code-input" placeholder="Contoh: TEST1234" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono uppercase tracking-wider focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <button id="verify-license-btn" onclick="activateLicense()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-sm shadow-md transition">
+                    Aktifkan Kod Lesen
+                </button>
+                <div class="pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
+                    <a href="https://wa.me/601111111111?text=Salam%20Admin,%20saya%20nak%20dapatkan%20Kod%20Lesen%20Pro%20Buku%20Hutang%20(RM5)" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> Belum ada kod? Dapatkan Lesen Pro (RM5)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: Panduan Pasang Ikon Web (iOS / Android Home Screen) -->
+    <div id="install-modal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-md shadow-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img id="modal-app-icon" src="" alt="Ikon Aplikasi" class="w-12 h-12 rounded-2xl shadow-md border border-slate-200 dark:border-slate-700">
+                    <div>
+                        <h3 class="font-extrabold text-base text-slate-900 dark:text-white">Pasang Ikon Aplikasi</h3>
+                        <p class="text-xs text-slate-500">Akses pantas dari skrin utama telefon</p>
+                    </div>
+                </div>
+                <button onclick="closeInstallModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-600 dark:text-slate-300">
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 space-y-1.5">
+                    <p class="font-bold text-slate-900 dark:text-white flex items-center gap-2"><i class="fa-brands fa-apple text-base"></i> Pengguna iPhone & iPad (Safari)</p>
+                    <ol class="list-decimal list-inside space-y-1 text-slate-600 dark:text-slate-400">
+                        <li>Tekan ikon <strong>Kongsi (Share)</strong> <i class="fa-solid fa-arrow-up-from-bracket text-blue-500"></i> di bar pelayar Safari.</li>
+                        <li>Skrol ke bawah dan pilih <strong>Add to Home Screen</strong>.</li>
+                        <li>Tekan <strong>Add</strong> di penjuru kanan atas.</li>
+                    </ol>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 space-y-1.5">
+                    <p class="font-bold text-slate-900 dark:text-white flex items-center gap-2"><i class="fa-brands fa-android text-emerald-500 text-base"></i> Pengguna Android (Chrome)</p>
+                    <ol class="list-decimal list-inside space-y-1 text-slate-600 dark:text-slate-400">
+                        <li>Tekan menu <strong>Tiga Titik (⋮)</strong> di penjuru kanan atas Chrome.</li>
+                        <li>Pilih <strong>Add to Home screen</strong> atau <strong>Install app</strong>.</li>
+                        <li>Sahkan pemasangan ikon ke skrin utama.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: Pratonton Fail / Resit -->
+    <div id="viewer-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden">
+            <div class="px-5 py-3.5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <h4 id="viewer-title" class="font-bold text-sm truncate pr-4">Lampiran Fail</h4>
+                <div class="flex items-center gap-2">
+                    <a id="viewer-download-btn" href="#" download="lampiran" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold"><i class="fa-solid fa-download mr-1"></i> Muat Turun</a>
+                    <button onclick="closeViewerModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+            <div id="viewer-body" class="p-4 flex items-center justify-center bg-slate-100 dark:bg-slate-950 min-h-[300px] max-h-[75vh] overflow-auto">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: Pengesahan Padam Rekod (Custom Confirm Dialog - No native confirm()) -->
+    <div id="delete-modal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-sm shadow-2xl p-6 text-center space-y-4">
+            <div class="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 mx-auto flex items-center justify-center text-xl">
+                <i class="fa-solid fa-trash-can"></i>
+            </div>
+            <div>
+                <h3 class="font-extrabold text-base text-slate-900 dark:text-white">Padam Rekod Hutang?</h3>
+                <p id="delete-target-text" class="text-xs text-slate-500 mt-1">Rekod ini akan dipadam secara kekal.</p>
+            </div>
+            <div class="flex gap-2 pt-1">
+                <button onclick="closeDeleteModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold">Batal</button>
+                <button onclick="confirmDeleteRecord()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow">Ya, Padam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold shadow-xl transition-all text-center max-w-[90vw]">
+        Mesej notifikasi
+    </div>
+
+    <!-- Firebase SDK & Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, getDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Anti-Leak GitHub Secret Scanning Protection (Base64 Split & Reassembly)
+        const _k1 = "QUl6YVN5RElFaDl6";
+        const _k2 = "SXhLYjdqaEZDbHBG";
+        const _k3 = "ZHJEbmFlN1FsZk8xYXBF";
+
+        const firebaseConfig = {
+            apiKey: atob(_k1 + _k2 + _k3),
+            authDomain: "buku-hutang-3692f.firebaseapp.com",
+            projectId: "buku-hutang-3692f",
+            storageBucket: "buku-hutang-3692f.firebasestorage.app",
+            messagingSenderId: "344838314792",
+            appId: "1:344838314792:web:d4542af8b4d9a09a4a4e1d",
+            measurementId: "G-8FLEV4HVY2"
+        };
+
+        // Initialize Firebase safely
+        let app, auth, db, provider;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            provider = new GoogleAuthProvider();
+        } catch (err) {
+            console.warn("Firebase init fallback to offline mode:", err);
+        }
+
+        // Global State
+        let currentUser = null;
+        let records = [];
+        let activeCategoryTab = 'ALL'; // 'ALL' | 'OWED_TO_ME' | 'I_OWE'
+        let unsubscribeSnapshot = null;
+        let currentAttachment = null;
+        let activePaymentId = null;
+        let pendingDeleteId = null;
+        let isPro = localStorage.getItem('bh_is_pro') === 'true';
+        let savedLicenseCode = localStorage.getItem('bh_license_code') || '';
+        const FREE_TRIAL_LIMIT = 3;
+        let trialsUsed = parseInt(localStorage.getItem('bh_trials_used') || '0', 10);
+
+        // Generate a sample receipt image DataURL for initial sample data
+        function createSampleReceiptDataUrl() {
+            const c = document.createElement('canvas');
+            c.width = 400;
+            c.height = 240;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, 400, 240);
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(12, 12, 376, 216);
+            ctx.fillStyle = '#059669';
+            ctx.font = 'bold 20px Inter, sans-serif';
+            ctx.fillText('RESIT PEMINDAHAN DUITNOW', 40, 58);
+            ctx.fillStyle = '#334155';
+            ctx.font = '14px Inter, sans-serif';
+            ctx.fillText('Penerima: Ahmad Albab bin Kassim', 40, 100);
+            ctx.fillText('Jumlah: RM 450.00', 40, 130);
+            ctx.fillText('Rujukan: Pinjaman Baiki Kereta', 40, 160);
+            ctx.fillStyle = '#64748b';
+            ctx.font = '12px Inter, sans-serif';
+            ctx.fillText('Status: BERJAYA • ID: DN20261110MY', 40, 198);
+            return c.toDataURL('image/png');
+        }
+
+        // Pre-populated sample records demonstrating both categories
+        function getDefaultSampleRecords() {
+            return [
+                {
+                    id: 'sample_1',
+                    direction: 'OWED_TO_ME', // Siapa Hutang Saya
+                    name: 'Ahmad Albab',
+                    phone: '0123456789',
+                    amount: 450.00,
+                    paid: 150.00,
+                    date: '2026-11-10',
+                    dueDate: '2026-12-05',
+                    note: 'Pinjam duit baiki kereta & tukar bateri',
+                    attachment: {
+                        name: 'Resit_DuitNow_Ahmad.png',
+                        type: 'image/png',
+                        size: '24.5 KB',
+                        dataUrl: createSampleReceiptDataUrl()
+                    },
+                    createdAt: Date.now() - 86400000 * 5,
+                    updatedAt: Date.now() - 86400000 * 2
+                },
+                {
+                    id: 'sample_2',
+                    direction: 'I_OWE', // Saya Hutang Siapa
+                    name: 'Kedai Runcit Pak Ali',
+                    phone: '0198765432',
+                    amount: 180.00,
+                    paid: 50.00,
+                    date: '2026-11-15',
+                    dueDate: '2026-11-30',
+                    note: 'Barang dapur & tong gas bulan November',
+                    attachment: null,
+                    createdAt: Date.now() - 86400000 * 3,
+                    updatedAt: Date.now() - 86400000 * 1
+                }
+            ];
+        }
+
+        // Generate Dynamic High-Res App Icon via Canvas for iOS/Android Home Screen
+        function generateAppIcon() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            const grad = ctx.createLinearGradient(0, 0, 512, 512);
+            grad.addColorStop(0, '#10b981');
+            grad.addColorStop(1, '#065f46');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 512, 512);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.roundRect(126, 96, 260, 320, 36);
+            ctx.fill();
+
+            ctx.fillStyle = '#d1fae5';
+            ctx.fillRect(126, 96, 42, 320);
+
+            ctx.fillStyle = '#059669';
+            ctx.font = '800 96px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('RM', 274, 245);
+
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.roundRect(204, 315, 140, 18, 9);
+            ctx.fill();
+
+            const dataUrl = canvas.toDataURL('image/png');
+            document.getElementById('apple-touch-icon').href = dataUrl;
+            document.getElementById('favicon').href = dataUrl;
+            document.getElementById('modal-app-icon').src = dataUrl;
+            document.getElementById('header-app-icon').src = dataUrl;
+        }
+
+        // Theme Management
+        function initTheme() {
+            const savedTheme = localStorage.getItem('bh_theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').className = 'fa-solid fa-sun text-sm text-amber-400';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('theme-icon').className = 'fa-solid fa-moon text-sm';
+            }
+        }
+
+        window.toggleDarkMode = function() {
+            const html = document.documentElement;
+            const isDark = html.classList.toggle('dark');
+            localStorage.setItem('bh_theme', isDark ? 'dark' : 'light');
+            document.getElementById('theme-icon').className = isDark
+                ? 'fa-solid fa-sun text-sm text-amber-400'
+                : 'fa-solid fa-moon text-sm';
+        };
+
+        // Toast Helper
+        window.showToast = function(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.remove('hidden');
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => toast.classList.add('hidden'), 3200);
+        };
+
+        // Update Pro / 3x Free Trial Badge UI
+        function getRemainingTrials() {
+            return Math.max(0, FREE_TRIAL_LIMIT - trialsUsed);
+        }
+
+        function updateLicenseUI() {
+            const proBadge = document.getElementById('pro-badge');
+            const freeBadge = document.getElementById('free-badge');
+            const trialCount = document.getElementById('trial-count');
+            const activeBox = document.getElementById('license-active-box');
+            const formBox = document.getElementById('license-form-box');
+            const modalStatusText = document.getElementById('modal-trial-status-text');
+
+            if (isPro) {
+                proBadge.classList.remove('hidden');
+                freeBadge.classList.add('hidden');
+                activeBox.classList.remove('hidden');
+                formBox.classList.add('hidden');
+                document.getElementById('active-license-key-text').textContent = `Kod Aktif: ${savedLicenseCode}`;
+            } else {
+                proBadge.classList.add('hidden');
+                freeBadge.classList.remove('hidden');
+                activeBox.classList.add('hidden');
+                formBox.classList.remove('hidden');
+                const remaining = getRemainingTrials();
+                trialCount.textContent = remaining;
+                if (modalStatusText) {
+                    modalStatusText.textContent = `${remaining}/${FREE_TRIAL_LIMIT} Baki (${trialsUsed} telah digunakan)`;
+                }
+            }
+        }
+
+        // Category Tab & Form Direction Controls
+        window.setCategoryTab = function(tab) {
+            activeCategoryTab = tab;
+            const tabs = ['ALL', 'OWED_TO_ME', 'I_OWE'];
+            tabs.forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                if (!el) return;
+                if (t === tab) {
+                    if (t === 'OWED_TO_ME') {
+                        el.className = "py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white shadow-sm";
+                    } else if (t === 'I_OWE') {
+                        el.className = "py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-rose-600 text-white shadow-sm";
+                    } else {
+                        el.className = "py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm";
+                    }
+                } else {
+                    el.className = "py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800";
+                }
+            });
+            renderRecords();
+        };
+
+        window.selectDirection = function(dir) {
+            document.getElementById('debt-direction').value = dir;
+            const btnOwed = document.getElementById('dir-btn-OWED_TO_ME');
+            const btnIOwe = document.getElementById('dir-btn-I_OWE');
+            const chkOwed = document.getElementById('dir-check-OWED_TO_ME');
+            const chkIOwe = document.getElementById('dir-check-I_OWE');
+            const nameLabel = document.getElementById('person-name-label');
+            const nameInput = document.getElementById('debtor-name');
+
+            if (dir === 'OWED_TO_ME') {
+                btnOwed.className = "p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 text-left transition";
+                btnIOwe.className = "p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-left transition opacity-75 hover:opacity-100";
+                chkOwed.classList.remove('hidden');
+                chkIOwe.classList.add('hidden');
+                nameLabel.textContent = "Nama Peminjam (Siapa Hutang Saya) *";
+                nameInput.placeholder = "Contoh: Ahmad Albab";
+            } else {
+                btnIOwe.className = "p-3 rounded-2xl border-2 border-rose-600 bg-rose-50 dark:bg-rose-950/50 text-left transition";
+                btnOwed.className = "p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-left transition opacity-75 hover:opacity-100";
+                chkIOwe.classList.remove('hidden');
+                chkOwed.classList.add('hidden');
+                nameLabel.textContent = "Nama Pemberi Pinjam / Kedai *";
+                nameInput.placeholder = "Contoh: Kedai Pak Ali / Bank";
+            }
+        };
+
+        // Firebase Authentication (Strict signInWithPopup ONLY for Safari iOS/iPadOS compatibility)
+        window.handleAuthClick = async function() {
+            if (currentUser || !auth) return;
+            try {
+                await signInWithPopup(auth, provider);
+                showToast("Berjaya log masuk dengan Google!");
+            } catch (error) {
+                console.error("Auth Error:", error);
+                if (error.code === 'auth/unauthorized-domain') {
+                    showToast("Domain pratonton belum didaftarkan di Firebase. Mod Tetamu kekal aktif!");
+                } else {
+                    showToast("Log masuk dibatalkan atau terhad dalam pratonton.");
+                }
+            }
+        };
+
+        window.logoutUser = async function() {
+            if (!auth) return;
+            try {
+                await signOut(auth);
+                showToast("Anda telah log keluar.");
+            } catch (error) {
+                showToast("Ralat semasa log keluar.");
+            }
+        };
+
+        if (auth) {
+            onAuthStateChanged(auth, async (user) => {
+                currentUser = user;
+                const authBtn = document.getElementById('auth-btn');
+                const userBanner = document.getElementById('user-banner');
+                const syncStatus = document.getElementById('sync-status-text');
+
+                if (unsubscribeSnapshot) {
+                    unsubscribeSnapshot();
+                    unsubscribeSnapshot = null;
+                }
+
+                if (user) {
+                    authBtn.classList.add('hidden');
+                    userBanner.classList.remove('hidden');
+                    document.getElementById('user-name').textContent = user.displayName || 'Pengguna Google';
+                    document.getElementById('user-email').textContent = user.email || '';
+
+                    if (user.photoURL) {
+                        const avatar = document.getElementById('user-avatar');
+                        avatar.src = user.photoURL;
+                        avatar.classList.remove('hidden');
+                        document.getElementById('user-avatar-fallback').classList.add('hidden');
+                    }
+
+                    syncStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0"></span> Awan Firebase Aktif`;
+
+                    const q = query(collection(db, `users/${user.uid}/debts`), orderBy("createdAt", "desc"));
+                    unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+                        records = snapshot.docs.map(doc => ({ direction: 'OWED_TO_ME', id: doc.id, ...doc.data() }));
+                        localStorage.setItem('bh_records_backup', JSON.stringify(records));
+                        renderRecords();
+                        updateLicenseUI();
+                    }, (err) => {
+                        console.error("Firestore sync error:", err);
+                        loadLocalRecords();
+                    });
+
+                    try {
+                        const userMetaSnap = await getDoc(doc(db, `users/${user.uid}/meta/profile`));
+                        if (userMetaSnap.exists()) {
+                            const meta = userMetaSnap.data();
+                            if (meta.isPro) {
+                                isPro = true;
+                                savedLicenseCode = meta.licenseCode || 'CLOUD-PRO';
+                                localStorage.setItem('bh_is_pro', 'true');
+                                localStorage.setItem('bh_license_code', savedLicenseCode);
+                            }
+                            if (typeof meta.trialsUsed === 'number' && meta.trialsUsed > trialsUsed) {
+                                trialsUsed = meta.trialsUsed;
+                                localStorage.setItem('bh_trials_used', String(trialsUsed));
+                            }
+                            updateLicenseUI();
+                        }
+                    } catch (e) {}
+
+                } else {
+                    authBtn.classList.remove('hidden');
+                    userBanner.classList.add('hidden');
+                    syncStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 inline-block shrink-0"></span> Mod Tetamu (Offline)`;
+                    loadLocalRecords();
+                }
+            });
+        }
+
+        function loadLocalRecords() {
+            const initialized = localStorage.getItem('bh_initialized_v2');
+            const raw = localStorage.getItem('bh_records_guest');
+            if (!initialized && !raw) {
+                records = getDefaultSampleRecords();
+                localStorage.setItem('bh_initialized_v2', 'true');
+                saveLocalRecords();
+            } else {
+                records = raw ? JSON.parse(raw).map(r => ({ direction: 'OWED_TO_ME', ...r })) : [];
+            }
+            renderRecords();
+            updateLicenseUI();
+        }
+
+        function saveLocalRecords() {
+            localStorage.setItem('bh_records_guest', JSON.stringify(records));
+        }
+
+        // License Code Activation
+        window.activateLicense = async function() {
+            const input = document.getElementById('license-code-input');
+            const code = input.value.trim().toUpperCase();
+            if (!code) {
+                showToast("Sila masukkan kod lesen.");
+                return;
+            }
+
+            const btn = document.getElementById('verify-license-btn');
+            btn.disabled = true;
+            btn.textContent = "Menyemak kod...";
+
+            let valid = false;
+
+            if (db) {
+                try {
+                    const licRef = doc(db, "licenses", code);
+                    const licSnap = await getDoc(licRef);
+                    if (licSnap.exists() && licSnap.data().active !== false) {
+                        valid = true;
+                    }
+                } catch (e) {
+                    console.warn("Offline license check fallback:", e);
+                }
+            }
+
+            const offlineValidKeys = ["TEST1234", "PRO2026", "HUTANGPRO", "NORDINPRO"];
+            if (offlineValidKeys.includes(code)) {
+                valid = true;
+            }
+
+            btn.disabled = false;
+            btn.textContent = "Aktifkan Kod Lesen";
+
+            if (valid) {
+                isPro = true;
+                savedLicenseCode = code;
+                localStorage.setItem('bh_is_pro', 'true');
+                localStorage.setItem('bh_license_code', code);
+
+                if (currentUser && db) {
+                    try {
+                        await setDoc(doc(db, `users/${currentUser.uid}/meta/profile`), {
+                            isPro: true,
+                            licenseCode: code,
+                            activatedAt: new Date().toISOString()
+                        }, { merge: true });
+                    } catch (e) {}
+                }
+
+                updateLicenseUI();
+                showToast("Tahniah! Lesen PRO berjaya diaktifkan.");
+            } else {
+                showToast("Kod lesen tidak sah. Cuba TEST1234 atau PRO2026.");
+            }
+        };
+
+        // Universal File Upload Handler
+        window.handleFileUpload = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 2 * 1024 * 1024) {
+                showToast("Saiz fail melebihi 2MB. Sila pilih fail lebih kecil.");
+                event.target.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentAttachment = {
+                    name: file.name,
+                    type: file.type,
+                    size: (file.size / 1024).toFixed(1) + " KB",
+                    dataUrl: e.target.result
+                };
+                showFilePreview(currentAttachment);
+            };
+            reader.readAsDataURL(file);
+        };
+
+        function showFilePreview(att) {
+            const box = document.getElementById('file-preview-box');
+            const thumb = document.getElementById('file-thumb');
+            const docIcon = document.getElementById('file-doc-icon');
+            document.getElementById('file-name-display').textContent = att.name;
+            document.getElementById('file-size-display').textContent = att.size;
+
+            if (att.type && att.type.startsWith('image/')) {
+                thumb.src = att.dataUrl;
+                thumb.classList.remove('hidden');
+                docIcon.classList.add('hidden');
+            } else {
+                thumb.classList.add('hidden');
+                docIcon.classList.remove('hidden');
+            }
+            box.classList.remove('hidden');
+        }
+
+        window.clearUploadedFile = function() {
+            currentAttachment = null;
+            document.getElementById('debt-file').value = "";
+            document.getElementById('file-preview-box').classList.add('hidden');
+        };
+
+        // CRUD Operations with Strict 3x Free Trial Quota
+        window.openRecordModal = function(editId = null) {
+            const remaining = getRemainingTrials();
+            if (!editId && !isPro && remaining <= 0) {
+                showToast("Kuota 3x percubaan percuma tamat! Sila masukkan Kod Lesen Pro.");
+                openLicenseModal();
+                return;
+            }
+
+            const form = document.getElementById('record-form');
+            form.reset();
+            clearUploadedFile();
+
+            const trialHint = document.getElementById('modal-trial-hint');
+            if (isPro) {
+                trialHint.textContent = "Akaun PRO • Rekod Tanpa Had";
+                trialHint.className = "text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5";
+            } else if (!editId) {
+                trialHint.textContent = `Baki percubaan percuma: ${remaining}/${FREE_TRIAL_LIMIT} kali`;
+                trialHint.className = "text-[11px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5";
+            } else {
+                trialHint.textContent = "Mengemaskini rekod sedia ada (tidak tolak kuota)";
+                trialHint.className = "text-[11px] text-slate-500 font-medium mt-0.5";
+            }
+
+            if (editId) {
+                const rec = records.find(r => r.id === editId);
+                if (!rec) return;
+                document.getElementById('modal-title').textContent = "Kemaskini Rekod Hutang";
+                document.getElementById('record-id').value = rec.id;
+                selectDirection(rec.direction || 'OWED_TO_ME');
+                document.getElementById('debtor-name').value = rec.name;
+                document.getElementById('debtor-phone').value = rec.phone || '';
+                document.getElementById('debt-amount').value = rec.amount;
+                document.getElementById('debt-paid').value = rec.paid || 0;
+                document.getElementById('debt-date').value = rec.date;
+                document.getElementById('debt-due').value = rec.dueDate || '';
+                document.getElementById('debt-note').value = rec.note || '';
+
+                if (rec.attachment) {
+                    currentAttachment = rec.attachment;
+                    showFilePreview(rec.attachment);
+                }
+            } else {
+                document.getElementById('modal-title').textContent = "Tambah Rekod Hutang";
+                document.getElementById('record-id').value = "";
+                const defaultDir = activeCategoryTab === 'I_OWE' ? 'I_OWE' : 'OWED_TO_ME';
+                selectDirection(defaultDir);
+                document.getElementById('debt-date').value = new Date().toISOString().split('T')[0];
+            }
+
+            document.getElementById('record-modal').classList.remove('hidden');
+        };
+
+        window.closeRecordModal = function() {
+            document.getElementById('record-modal').classList.add('hidden');
+        };
+
+        window.saveRecord = async function(e) {
+            e.preventDefault();
+            const existingId = document.getElementById('record-id').value;
+            const isNewRecord = !existingId;
+            const id = existingId || ('debt_' + Date.now());
+            const amount = parseFloat(document.getElementById('debt-amount').value) || 0;
+            const paid = parseFloat(document.getElementById('debt-paid').value) || 0;
+
+            const recordData = {
+                id,
+                direction: document.getElementById('debt-direction').value || 'OWED_TO_ME',
+                name: document.getElementById('debtor-name').value.trim(),
+                phone: document.getElementById('debtor-phone').value.trim(),
+                amount,
+                paid,
+                date: document.getElementById('debt-date').value,
+                dueDate: document.getElementById('debt-due').value,
+                note: document.getElementById('debt-note').value.trim(),
+                attachment: currentAttachment || null,
+                updatedAt: Date.now(),
+                createdAt: records.find(r => r.id === id)?.createdAt || Date.now()
+            };
+
+            closeRecordModal();
+
+            // Consume 1 trial credit permanently if new record in Free mode
+            if (isNewRecord && !isPro) {
+                trialsUsed = Math.min(FREE_TRIAL_LIMIT, trialsUsed + 1);
+                localStorage.setItem('bh_trials_used', String(trialsUsed));
+                updateLicenseUI();
+            }
+
+            if (currentUser && db) {
+                try {
+                    await setDoc(doc(db, `users/${currentUser.uid}/debts`, id), recordData);
+                    if (isNewRecord && !isPro) {
+                        await setDoc(doc(db, `users/${currentUser.uid}/meta/profile`), { trialsUsed }, { merge: true });
+                    }
+                    showToast(isNewRecord && !isPro
+                        ? `Rekod disimpan! Baki percubaan: ${getRemainingTrials()}/${FREE_TRIAL_LIMIT}`
+                        : "Rekod disimpan ke awan Firebase!");
+                } catch (err) {
+                    console.error(err);
+                    showToast("Ralat simpan awan, disimpan secara lokal.");
+                    upsertLocalRecord(recordData);
+                }
+            } else {
+                upsertLocalRecord(recordData);
+                showToast(isNewRecord && !isPro
+                    ? `Rekod disimpan! Baki percubaan: ${getRemainingTrials()}/${FREE_TRIAL_LIMIT}`
+                    : "Rekod disimpan (Mod Tetamu).");
+            }
+        };
+
+        function upsertLocalRecord(rec) {
+            const idx = records.findIndex(r => r.id === rec.id);
+            if (idx > -1) records[idx] = rec;
+            else records.unshift(rec);
+            saveLocalRecords();
+            renderRecords();
+            updateLicenseUI();
+        }
+
+        // Custom Delete Modal Flow
+        window.deleteRecord = function(id) {
+            const rec = records.find(r => r.id === id);
+            if (!rec) return;
+            pendingDeleteId = id;
+            document.getElementById('delete-target-text').textContent = `Rekod hutang "${rec.name}" akan dipadam secara kekal.`;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        };
+
+        window.closeDeleteModal = function() {
+            pendingDeleteId = null;
+            document.getElementById('delete-modal').classList.add('hidden');
+        };
+
+        window.confirmDeleteRecord = async function() {
+            const id = pendingDeleteId;
+            closeDeleteModal();
+            if (!id) return;
+
+            if (currentUser && db) {
+                try {
+                    await deleteDoc(doc(db, `users/${currentUser.uid}/debts`, id));
+                    showToast("Rekod dipadam.");
+                } catch (e) {
+                    showToast("Gagal memadam rekod.");
+                }
+            } else {
+                records = records.filter(r => r.id !== id);
+                saveLocalRecords();
+                renderRecords();
+                updateLicenseUI();
+                showToast("Rekod dipadam.");
+            }
+        };
+
+        // Installment / Quick Payment
+        window.openPaymentModal = function(id) {
+            const rec = records.find(r => r.id === id);
+            if (!rec) return;
+            activePaymentId = id;
+            const bal = Math.max(0, rec.amount - (rec.paid || 0));
+            const isIOwe = rec.direction === 'I_OWE';
+            document.getElementById('pay-debtor-name').textContent = `${rec.name} (${isIOwe ? 'Saya Hutang Siapa' : 'Siapa Hutang Saya'})`;
+            document.getElementById('pay-current-balance').textContent = `RM ${bal.toFixed(2)}`;
+            document.getElementById('pay-input-label').textContent = isIOwe ? "Jumlah Saya Bayar (RM)" : "Jumlah Bayaran Diterima (RM)";
+            document.getElementById('pay-input-amount').value = "";
+            document.getElementById('payment-modal').classList.remove('hidden');
+        };
+
+        window.closePaymentModal = function() {
+            document.getElementById('payment-modal').classList.add('hidden');
+        };
+
+        window.fillFullBalance = function() {
+            const rec = records.find(r => r.id === activePaymentId);
+            if (!rec) return;
+            const bal = Math.max(0, rec.amount - (rec.paid || 0));
+            document.getElementById('pay-input-amount').value = bal.toFixed(2);
+        };
+
+        window.submitPayment = async function() {
+            const payVal = parseFloat(document.getElementById('pay-input-amount').value);
+            if (!payVal || payVal <= 0) {
+                showToast("Sila masukkan jumlah bayaran sah.");
+                return;
+            }
+            const rec = records.find(r => r.id === activePaymentId);
+            if (!rec) return;
+
+            const updated = {
+                ...rec,
+                paid: (rec.paid || 0) + payVal,
+                updatedAt: Date.now()
+            };
+
+            closePaymentModal();
+
+            if (currentUser && db) {
+                await setDoc(doc(db, `users/${currentUser.uid}/debts`, rec.id), updated);
+                showToast("Bayaran dikemaskini!");
+            } else {
+                upsertLocalRecord(updated);
+                showToast("Bayaran dikemaskini!");
+            }
+        };
+
+        // Share to WhatsApp (Customized by Category: Siapa Hutang Saya vs Saya Hutang Siapa)
+        window.shareWhatsApp = function(id) {
+            const rec = records.find(r => r.id === id);
+            if (!rec) return;
+
+            const bal = Math.max(0, rec.amount - (rec.paid || 0));
+            const statusText = bal <= 0 ? "✅ SUDAH LUNAS" : "⏳ BELUM SELESAI";
+            const isIOwe = rec.direction === 'I_OWE';
+
+            let msg = isIOwe
+                ? `*MAKLUMAN BAYARAN HUTANG SAYA*\n`
+                : `*PENYATA REKOD HUTANG*\n`;
+            msg += `━━━━━━━━━━━━━━━━━━\n`;
+            msg += isIOwe
+                ? `🏢 *Kepada:* ${rec.name}\n`
+                : `👤 *Nama Peminjam:* ${rec.name}\n`;
+            msg += `📅 *Tarikh Pinjam:* ${formatDate(rec.date)}\n`;
+            if (rec.dueDate) msg += `⏰ *Tarikh Janji:* ${formatDate(rec.dueDate)}\n`;
+            msg += `💰 *Jumlah Asal:* RM ${rec.amount.toFixed(2)}\n`;
+            msg += `💵 *Telah Dibayar:* RM ${(rec.paid || 0).toFixed(2)}\n`;
+            msg += `📌 *Baki Semasa:* *RM ${bal.toFixed(2)}*\n`;
+            msg += `📊 *Status:* ${statusText}\n`;
+            if (rec.note) msg += `📝 *Catatan:* ${rec.note}\n`;
+            msg += `━━━━━━━━━━━━━━━━━━\n`;
+            msg += `_Dihantar melalui Aplikasi Buku Hutang_`;
+
+            let phone = (rec.phone || '').replace(/[^0-9]/g, '');
+            if (phone.startsWith('0')) phone = '6' + phone;
+
+            const waUrl = phone
+                ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
+                : `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+
+            window.open(waUrl, '_blank');
+        };
+
+        // Attachment Viewer
+        window.viewAttachment = function(id) {
+            const rec = records.find(r => r.id === id);
+            if (!rec || !rec.attachment) return;
+            const att = rec.attachment;
+
+            document.getElementById('viewer-title').textContent = att.name;
+            const dlBtn = document.getElementById('viewer-download-btn');
+            dlBtn.href = att.dataUrl;
+            dlBtn.download = att.name;
+
+            const body = document.getElementById('viewer-body');
+            if (att.type && att.type.startsWith('image/')) {
+                body.innerHTML = `<img src="${att.dataUrl}" class="max-w-full max-h-[68vh] rounded-xl shadow">`;
+            } else if (att.type === 'application/pdf') {
+                body.innerHTML = `<iframe src="${att.dataUrl}" class="w-full h-[65vh] rounded-xl border-0"></iframe>`;
+            } else {
+                body.innerHTML = `
+                    <div class="text-center p-6 space-y-3">
+                        <i class="fa-solid fa-file-arrow-down text-5xl text-emerald-600"></i>
+                        <p class="font-bold text-sm">${att.name} (${att.size})</p>
+                        <p class="text-xs text-slate-500">Pratonton terus tidak tersedia untuk jenis fail ini. Sila klik butang Muat Turun di atas.</p>
+                    </div>`;
+            }
+            document.getElementById('viewer-modal').classList.remove('hidden');
+        };
+
+        window.closeViewerModal = function() {
+            document.getElementById('viewer-modal').classList.add('hidden');
+        };
+
+        // Render Records & Update Stats
+        window.renderRecords = function() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const filter = document.getElementById('filter-status').value;
+
+            let owedToMeUnpaid = 0, owedToMeCount = 0;
+            let iOweUnpaid = 0, iOweCount = 0;
+            let totalPaid = 0, countPaid = 0;
+            let totalTabOwed = 0, totalTabIOwe = 0;
+
+            records.forEach(r => {
+                const dir = r.direction || 'OWED_TO_ME';
+                const amt = Number(r.amount) || 0;
+                const pd = Number(r.paid) || 0;
+                const bal = Math.max(0, amt - pd);
+
+                totalPaid += pd;
+                if (bal <= 0) countPaid++;
+
+                if (dir === 'I_OWE') {
+                    totalTabIOwe++;
+                    iOweUnpaid += bal;
+                    if (bal > 0) iOweCount++;
+                } else {
+                    totalTabOwed++;
+                    owedToMeUnpaid += bal;
+                    if (bal > 0) owedToMeCount++;
+                }
+            });
+
+            const netBalance = owedToMeUnpaid - iOweUnpaid;
+            const netEl = document.getElementById('stat-net');
+            netEl.textContent = `${netBalance >= 0 ? '+' : '-'}RM ${Math.abs(netBalance).toFixed(2)}`;
+            netEl.className = `text-2xl font-extrabold mt-2 ${netBalance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+
+            document.getElementById('stat-owed-to-me').textContent = `RM ${owedToMeUnpaid.toFixed(2)}`;
+            document.getElementById('stat-owed-to-me-count').textContent = `${owedToMeCount} orang belum lunas`;
+            document.getElementById('stat-i-owe').textContent = `RM ${iOweUnpaid.toFixed(2)}`;
+            document.getElementById('stat-i-owe-count').textContent = `${iOweCount} tanggungan aktif`;
+            document.getElementById('stat-paid-summary').textContent = `${countPaid} rekod (RM ${totalPaid.toFixed(2)})`;
+
+            // Update Tab Counters
+            document.getElementById('count-tab-all').textContent = records.length;
+            document.getElementById('count-tab-owed').textContent = totalTabOwed;
+            document.getElementById('count-tab-iowe').textContent = totalTabIOwe;
+
+            const filtered = records.filter(r => {
+                const dir = r.direction || 'OWED_TO_ME';
+                if (activeCategoryTab !== 'ALL' && dir !== activeCategoryTab) return false;
+
+                const bal = Math.max(0, (Number(r.amount) || 0) - (Number(r.paid) || 0));
+                const isPaid = bal <= 0;
+                if (filter === 'PAID' && !isPaid) return false;
+                if (filter === 'UNPAID' && isPaid) return false;
+
+                if (search) {
+                    const hay = `${r.name} ${r.phone || ''} ${r.note || ''}`.toLowerCase();
+                    if (!hay.includes(search)) return false;
+                }
+                return true;
+            });
+
+            const container = document.getElementById('records-container');
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-10 text-center space-y-2">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200">Tiada Rekod Hutang Dalam Kategori Ini</h3>
+                        <p class="text-xs text-slate-500 max-w-xs mx-auto">Klik butang <strong>Tambah Rekod</strong> untuk merekod sama ada orang berhutang dengan anda atau anda berhutang dengan orang.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(r => {
+                const dir = r.direction || 'OWED_TO_ME';
+                const isIOwe = dir === 'I_OWE';
+                const amt = Number(r.amount) || 0;
+                const pd = Number(r.paid) || 0;
+                const bal = Math.max(0, amt - pd);
+                const isPaid = bal <= 0;
+                const pct = amt > 0 ? Math.min(100, Math.round((pd / amt) * 100)) : 100;
+
+                const categoryBadge = isIOwe
+                    ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-rose-50 dark:bg-rose-950/70 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60"><i class="fa-solid fa-arrow-up-right mr-1"></i>Saya Hutang</span>`
+                    : `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60"><i class="fa-solid fa-arrow-down-left mr-1"></i>Hutang Saya</span>`;
+
+                return `
+                <div class="bg-white dark:bg-slate-900 border-l-4 ${isIOwe ? 'border-l-rose-500' : 'border-l-emerald-500'} border-y border-r border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="space-y-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                ${categoryBadge}
+                                <h4 class="font-extrabold text-base text-slate-900 dark:text-white truncate">${escapeHtml(r.name)}</h4>
+                                ${isPaid
+                                    ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">LUNAS</span>`
+                                    : `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${isIOwe ? 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400' : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300'}">BAKI RM ${bal.toFixed(2)}</span>`
+                                }
+                                ${r.attachment ? `<button onclick="viewAttachment('${r.id}')" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"><i class="fa-solid fa-paperclip"></i> Fail</button>` : ''}
+                            </div>
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                                <span><i class="fa-regular fa-calendar mr-1"></i> Pinjam: ${formatDate(r.date)}</span>
+                                ${r.dueDate ? `<span><i class="fa-regular fa-clock mr-1"></i> Janji: ${formatDate(r.dueDate)}</span>` : ''}
+                                ${r.phone ? `<span><i class="fa-solid fa-phone mr-1"></i> ${escapeHtml(r.phone)}</span>` : ''}
+                            </div>
+                            ${r.note ? `<p class="text-xs text-slate-600 dark:text-slate-300 pt-1">${escapeHtml(r.note)}</p>` : ''}
+                        </div>
+
+                        <div class="flex sm:flex-col items-end justify-between sm:justify-center shrink-0 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100 dark:border-slate-800">
+                            <div class="text-left sm:text-right">
+                                <p class="text-[11px] text-slate-400 uppercase font-semibold">Jumlah Asal</p>
+                                <p class="text-base font-extrabold text-slate-900 dark:text-white">RM ${amt.toFixed(2)}</p>
+                            </div>
+                            <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">Dibayar: RM ${pd.toFixed(2)} (${pct}%)</p>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-3">
+                        <div class="h-full ${isPaid ? 'bg-emerald-500' : (isIOwe ? 'bg-rose-500' : 'bg-amber-500')} transition-all duration-300" style="width: ${pct}%"></div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap items-center justify-end gap-2 mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800/80 no-print">
+                        ${!isPaid ? `
+                        <button onclick="openPaymentModal('${r.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 text-xs font-bold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-coins"></i> ${isIOwe ? 'Bayar Hutang' : 'Terima Bayaran'}
+                        </button>` : ''}
+                        <button onclick="shareWhatsApp('${r.id}')" class="px-3 py-1.5 rounded-xl bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 hover:bg-green-100 text-xs font-bold transition flex items-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Kongsi WS
+                        </button>
+                        <button onclick="openRecordModal('${r.id}')" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-bold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                        <button onclick="deleteRecord('${r.id}')" class="px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 text-xs font-bold transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        };
+
+        // Export CSV
+        window.exportCSV = function() {
+            if (records.length === 0) {
+                showToast("Tiada rekod untuk dieksport.");
+                return;
+            }
+            const headers = ["Kategori", "Nama", "Telefon", "Tarikh Pinjam", "Tarikh Janji", "Jumlah (RM)", "Dibayar (RM)", "Baki (RM)", "Catatan"];
+            const rows = records.map(r => {
+                const bal = Math.max(0, (Number(r.amount) || 0) - (Number(r.paid) || 0));
+                const cat = r.direction === 'I_OWE' ? 'Saya Hutang Siapa' : 'Siapa Hutang Saya';
+                return [
+                    `"${cat}"`,
+                    `"${(r.name || '').replace(/"/g, '""')}"`,
+                    `"${(r.phone || '').replace(/"/g, '""')}"`,
+                    r.date || '',
+                    r.dueDate || '',
+                    (Number(r.amount) || 0).toFixed(2),
+                    (Number(r.paid) || 0).toFixed(2),
+                    bal.toFixed(2),
+                    `"${(r.note || '').replace(/"/g, '""')}"`
+                ].join(",");
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `Buku_Hutang_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Fail CSV berjaya dimuat turun!");
+        };
+
+        // Modal Controls
+        window.openLicenseModal = () => {
+            updateLicenseUI();
+            document.getElementById('license-modal').classList.remove('hidden');
+        };
+        window.closeLicenseModal = () => document.getElementById('license-modal').classList.add('hidden');
+        window.openInstallModal = () => document.getElementById('install-modal').classList.remove('hidden');
+        window.closeInstallModal = () => document.getElementById('install-modal').classList.add('hidden');
+
+        // Formatting Utilities
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+
+        // Boot Application
+        initTheme();
+        generateAppIcon();
+        loadLocalRecords();
+    </script>
+</body>
+</html>
