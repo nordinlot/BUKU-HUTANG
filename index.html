@@ -60,21 +60,23 @@
     <!-- Top Navigation Bar -->
     <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 glass-card border-b border-slate-200 dark:border-slate-800 no-print">
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-3 min-w-0">
-                <img id="header-app-icon" src="" alt="Logo" class="w-10 h-10 rounded-xl shadow-md shadow-emerald-500/20 border border-emerald-500/20 shrink-0">
-                <div class="min-w-0">
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <h1 class="font-extrabold text-base md:text-lg tracking-tight text-slate-900 dark:text-white leading-none truncate">Buku Hutang</h1>
-                        <span id="pro-badge" class="hidden px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-600 dark:text-amber-400 border border-amber-400/40 rounded-full shrink-0">PRO</span>
-                        <span id="free-badge" class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 border border-amber-300/60 dark:border-amber-800 rounded-full shrink-0">PERCUBAAN: <span id="trial-count">3</span>/3 BAKI</span>
+            <div class="flex items-center gap-3">
+                <div id="header-logo-preview" class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 font-bold text-lg">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-extrabold text-base md:text-lg tracking-tight text-slate-900 dark:text-white leading-none">Buku Hutang</h1>
+                        <span id="pro-badge" class="hidden px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-amber-400/20 text-amber-600 dark:text-amber-400 border border-amber-400/40 rounded-full">PRO</span>
+                        <span id="free-badge" class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full">PERCUMA (<span id="trial-count">3</span>/3)</span>
                     </div>
-                    <p id="sync-status-text" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5 truncate">
-                        <span class="w-2 h-2 rounded-full bg-amber-500 inline-block shrink-0"></span> Mod Tetamu (Offline)
+                    <p id="sync-status-text" class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span> Mod Tetamu (Offline)
                     </p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div class="flex items-center gap-1.5 sm:gap-2">
                 <!-- License Button -->
                 <button onclick="openLicenseModal()" title="Kod Lesen Pro" class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800/60 transition">
                     <i class="fa-solid fa-crown text-sm"></i>
@@ -117,69 +119,52 @@
             </button>
         </div>
 
-        <!-- Dashboard Summary Cards: Siapa Hutang Saya vs Saya Hutang Siapa -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Kad 1: Siapa Hutang Saya (Piutang / Duit Orang Pinjam Saya) -->
-            <div onclick="setCategoryTab('OWED_TO_ME')" class="cursor-pointer bg-gradient-to-br from-emerald-600 to-teal-800 rounded-2xl p-5 text-white shadow-lg shadow-emerald-600/15 relative overflow-hidden hover:scale-[1.01] transition">
+        <!-- Category Tabs: Semua / Siapa Hutang Saya / Saya Hutang Siapa -->
+        <section class="grid grid-cols-3 gap-2 p-1.5 bg-slate-200/70 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl no-print">
+            <button type="button" onclick="setCategoryTab('ALL')" id="tab-ALL" class="py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm">
+                <i class="fa-solid fa-layer-group mr-1 hidden sm:inline text-emerald-600"></i> Semua
+            </button>
+            <button type="button" onclick="setCategoryTab('OWED_TO_ME')" id="tab-OWED_TO_ME" class="py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                <i class="fa-solid fa-arrow-down-left mr-1 hidden sm:inline text-emerald-500"></i> Siapa Hutang Saya
+            </button>
+            <button type="button" onclick="setCategoryTab('I_OWE')" id="tab-I_OWE" class="py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                <i class="fa-solid fa-arrow-up-right mr-1 hidden sm:inline text-rose-500"></i> Saya Hutang Siapa
+            </button>
+        </section>
+
+        <!-- Dashboard Summary Cards -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <!-- Siapa Hutang Saya (Piutang Belum Diterima) -->
+            <div class="bg-gradient-to-br from-emerald-600 to-teal-800 rounded-2xl p-5 text-white shadow-lg shadow-emerald-600/15 relative overflow-hidden">
                 <div class="relative z-10">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="px-2 py-0.5 rounded-md bg-white/15 text-emerald-50 text-[10px] font-extrabold uppercase tracking-wider">Duit Masuk (Piutang)</span>
-                        <i class="fa-solid fa-arrow-down-left text-emerald-200 text-sm"></i>
-                    </div>
-                    <p class="text-emerald-100 text-xs font-bold uppercase tracking-wider mt-2.5">Siapa Hutang Saya</p>
-                    <h2 id="stat-owed-to-me" class="text-2xl sm:text-3xl font-extrabold mt-0.5 tracking-tight">RM 0.00</h2>
-                    <p id="stat-owed-to-me-count" class="text-xs text-emerald-100/90 mt-2">0 orang belum lunas</p>
+                    <p class="text-emerald-100 text-xs font-semibold uppercase tracking-wider">Siapa Hutang Saya (Baki)</p>
+                    <h2 id="stat-owed-to-me" class="text-2xl sm:text-3xl font-extrabold mt-1 tracking-tight">RM 0.00</h2>
+                    <p id="stat-owed-to-me-count" class="text-xs text-emerald-100/90 mt-2">0 orang belum bayar</p>
                 </div>
                 <i class="fa-solid fa-hand-holding-dollar absolute -right-3 -bottom-3 text-7xl text-white/10"></i>
             </div>
 
-            <!-- Kad 2: Saya Hutang Siapa (Tanggungan / Duit Saya Pinjam Orang) -->
-            <div onclick="setCategoryTab('I_OWE')" class="cursor-pointer bg-gradient-to-br from-rose-600 to-orange-700 rounded-2xl p-5 text-white shadow-lg shadow-rose-600/15 relative overflow-hidden hover:scale-[1.01] transition">
+            <!-- Saya Hutang Siapa (Hutang Belum Dijelaskan) -->
+            <div class="bg-gradient-to-br from-rose-600 to-red-800 rounded-2xl p-5 text-white shadow-lg shadow-rose-600/15 relative overflow-hidden">
                 <div class="relative z-10">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="px-2 py-0.5 rounded-md bg-white/15 text-rose-50 text-[10px] font-extrabold uppercase tracking-wider">Duit Keluar (Tanggungan)</span>
-                        <i class="fa-solid fa-arrow-up-right text-rose-200 text-sm"></i>
-                    </div>
-                    <p class="text-rose-100 text-xs font-bold uppercase tracking-wider mt-2.5">Saya Hutang Siapa</p>
-                    <h2 id="stat-i-owe" class="text-2xl sm:text-3xl font-extrabold mt-0.5 tracking-tight">RM 0.00</h2>
-                    <p id="stat-i-owe-count" class="text-xs text-rose-100/90 mt-2">0 tanggungan aktif</p>
+                    <p class="text-rose-100 text-xs font-semibold uppercase tracking-wider">Saya Hutang Siapa (Baki)</p>
+                    <h2 id="stat-i-owe" class="text-2xl sm:text-3xl font-extrabold mt-1 tracking-tight">RM 0.00</h2>
+                    <p id="stat-i-owe-count" class="text-xs text-rose-100/90 mt-2">0 hutang belum lunas</p>
                 </div>
                 <i class="fa-solid fa-file-invoice-dollar absolute -right-3 -bottom-3 text-7xl text-white/10"></i>
             </div>
 
-            <!-- Kad 3: Kedudukan Bersih & Jumlah Selesai -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm sm:col-span-2 lg:col-span-1 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between">
-                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Kedudukan Bersih (Net)</p>
-                        <span class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-scale-balanced"></i>
-                        </span>
-                    </div>
-                    <h2 id="stat-net" class="text-2xl font-extrabold text-slate-900 dark:text-white mt-2">RM 0.00</h2>
-                    <p id="stat-net-desc" class="text-xs text-slate-500 dark:text-slate-400 mt-1">Imbangan piutang tolak tanggungan</p>
+            <!-- Jumlah Sudah Selesai / Lunas -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">Sudah Selesai / Lunas</p>
+                    <span class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </span>
                 </div>
-                <div class="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                    <span class="text-slate-500">Rekod Selesai / Lunas:</span>
-                    <span id="stat-paid-summary" class="font-bold text-emerald-600 dark:text-emerald-400">0 rekod (RM 0.00)</span>
-                </div>
+                <h2 id="stat-paid" class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2">RM 0.00</h2>
+                <p id="stat-paid-count" class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">0 rekod selesai bayar</p>
             </div>
-        </section>
-
-        <!-- Category Tabs: Semua | Siapa Hutang Saya | Saya Hutang Siapa -->
-        <section class="bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 grid grid-cols-3 gap-1.5 shadow-sm no-print">
-            <button type="button" id="tab-ALL" onclick="setCategoryTab('ALL')" class="py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm">
-                <i class="fa-solid fa-layer-group text-xs"></i>
-                <span>Semua (<span id="count-tab-all">0</span>)</span>
-            </button>
-            <button type="button" id="tab-OWED_TO_ME" onclick="setCategoryTab('OWED_TO_ME')" class="py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
-                <i class="fa-solid fa-hand-holding-dollar text-emerald-600 text-xs"></i>
-                <span>Siapa Hutang Saya (<span id="count-tab-owed">0</span>)</span>
-            </button>
-            <button type="button" id="tab-I_OWE" onclick="setCategoryTab('I_OWE')" class="py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
-                <i class="fa-solid fa-receipt text-rose-600 text-xs"></i>
-                <span>Saya Hutang Siapa (<span id="count-tab-iowe">0</span>)</span>
-            </button>
         </section>
 
         <!-- Action Bar: Search, Filter & Add Button -->
@@ -224,46 +209,39 @@
     <div id="record-modal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden my-auto">
             <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <div>
-                    <h3 id="modal-title" class="font-extrabold text-lg text-slate-900 dark:text-white">Tambah Rekod Hutang</h3>
-                    <p id="modal-trial-hint" class="text-[11px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5">Baki percubaan percuma: 3/3 kali</p>
-                </div>
+                <h3 id="modal-title" class="font-extrabold text-lg text-slate-900 dark:text-white">Tambah Rekod Hutang</h3>
                 <button onclick="closeRecordModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white flex items-center justify-center">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
-            <form id="record-form" onsubmit="saveRecord(event)" class="p-6 space-y-4 max-h-[82vh] overflow-y-auto">
+            <form id="record-form" onsubmit="saveRecord(event)" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
                 <input type="hidden" id="record-id">
-                <input type="hidden" id="debt-direction" value="OWED_TO_ME">
 
-                <!-- Category Selector: Siapa Hutang Saya vs Saya Hutang Siapa -->
+                <!-- Jenis Hutang Selector -->
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1.5">Kategori Rekod *</label>
                     <div class="grid grid-cols-2 gap-2.5">
-                        <button type="button" id="dir-btn-OWED_TO_ME" onclick="selectDirection('OWED_TO_ME')" class="p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 text-left transition">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-xs"><i class="fa-solid fa-hand-holding-dollar"></i></span>
-                                <i id="dir-check-OWED_TO_ME" class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="debt-type" id="type-owed-to-me" value="OWED_TO_ME" checked onchange="updateFormLabels()" class="peer sr-only">
+                            <div class="p-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 dark:peer-checked:bg-emerald-950/50 text-center transition">
+                                <p class="text-xs font-extrabold text-slate-800 dark:text-slate-100"><i class="fa-solid fa-arrow-down-left text-emerald-600 mr-1"></i> Siapa Hutang Saya</p>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Orang lain pinjam duit saya</p>
                             </div>
-                            <p class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">Siapa Hutang Saya</p>
-                            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Orang lain pinjam duit saya</p>
-                        </button>
-
-                        <button type="button" id="dir-btn-I_OWE" onclick="selectDirection('I_OWE')" class="p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-left transition">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center text-xs"><i class="fa-solid fa-receipt"></i></span>
-                                <i id="dir-check-I_OWE" class="fa-solid fa-circle-check text-rose-600 text-sm hidden"></i>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="debt-type" id="type-i-owe" value="I_OWE" onchange="updateFormLabels()" class="peer sr-only">
+                            <div class="p-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-rose-500 peer-checked:bg-rose-50 dark:peer-checked:bg-rose-950/50 text-center transition">
+                                <p class="text-xs font-extrabold text-slate-800 dark:text-slate-100"><i class="fa-solid fa-arrow-up-right text-rose-600 mr-1"></i> Saya Hutang Siapa</p>
+                                <p class="text-[10px] text-slate-500 mt-0.5">Saya pinjam duit orang/kedai</p>
                             </div>
-                            <p class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-white">Saya Hutang Siapa</p>
-                            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Saya pinjam orang / kedai</p>
-                        </button>
+                        </label>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label id="person-name-label" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Nama Peminjam *</label>
+                        <label id="label-person-name" class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">Nama Peminjam *</label>
                         <input type="text" id="debtor-name" required placeholder="Contoh: Ahmad Albab" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
                     </div>
                     <div>
@@ -366,28 +344,25 @@
                     </div>
                     <div>
                         <h3 class="font-extrabold text-base text-slate-900 dark:text-white">Pengaktifan Lesen Pro</h3>
-                        <p class="text-xs text-slate-500">Rekod tanpa had & sandaran awan penuh</p>
+                        <p class="text-xs text-slate-500">Eksklusif untuk akaun aktif anda</p>
                     </div>
                 </div>
                 <button onclick="closeLicenseModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
             <div id="license-active-box" class="hidden p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-center space-y-1">
-                <p class="text-sm font-extrabold text-emerald-700 dark:text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i> Akaun Anda Berstatus PRO!</p>
+                <p class="text-sm font-extrabold text-emerald-700 dark:text-emerald-400"><i class="fa-solid fa-circle-check mr-1"></i> Akaun Ini Berstatus PRO!</p>
                 <p id="active-license-key-text" class="text-xs font-mono text-slate-600 dark:text-slate-300"></p>
+                <p id="active-license-owner-text" class="text-[11px] text-slate-500 dark:text-slate-400"></p>
             </div>
 
             <div id="license-form-box" class="space-y-3">
-                <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-xs text-amber-800 dark:text-amber-300">
-                    <p class="font-bold"><i class="fa-solid fa-hourglass-half mr-1"></i> Status Percubaan Percuma: <span id="modal-trial-status-text">3/3 Baki</span></p>
-                    <p class="mt-1 text-[11px] opacity-90">Setiap penambahan rekod baharu menggunakan 1 kuota percubaan (tidak dikembalikan walaupun rekod dipadam).</p>
-                </div>
                 <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Masukkan <strong>Kod Lesen Pro</strong> anda (kod ujian: <code class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-amber-600 font-bold">TEST1234</code> atau <code class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-amber-600 font-bold">PRO2026</code>) untuk membuka akses tanpa had seumur hidup.
+                    Setiap akaun diberikan <strong>3 kali percubaan percuma</strong>. Masukkan <strong>Kod Lesen Pro</strong> untuk mengaktifkan rekod tanpa had pada akaun ini.
                 </p>
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Masukkan Kod Lesen</label>
-                    <input type="text" id="license-code-input" placeholder="Contoh: TEST1234" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono uppercase tracking-wider focus:ring-2 focus:ring-amber-500 outline-none">
+                    <input type="text" id="license-code-input" placeholder="Contoh: PRO-XXXX-XXXX" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono uppercase tracking-wider focus:ring-2 focus:ring-amber-500 outline-none">
                 </div>
                 <button id="verify-license-btn" onclick="activateLicense()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-sm shadow-md transition">
                     Aktifkan Kod Lesen
@@ -453,25 +428,8 @@
         </div>
     </div>
 
-    <!-- MODAL 6: Pengesahan Padam Rekod (Custom Confirm Dialog - No native confirm()) -->
-    <div id="delete-modal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-sm shadow-2xl p-6 text-center space-y-4">
-            <div class="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 mx-auto flex items-center justify-center text-xl">
-                <i class="fa-solid fa-trash-can"></i>
-            </div>
-            <div>
-                <h3 class="font-extrabold text-base text-slate-900 dark:text-white">Padam Rekod Hutang?</h3>
-                <p id="delete-target-text" class="text-xs text-slate-500 mt-1">Rekod ini akan dipadam secara kekal.</p>
-            </div>
-            <div class="flex gap-2 pt-1">
-                <button onclick="closeDeleteModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold">Batal</button>
-                <button onclick="confirmDeleteRecord()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow">Ya, Padam</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold shadow-xl transition-all text-center max-w-[90vw]">
+    <div id="toast" class="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold shadow-xl transition-all">
         Mesej notifikasi
     </div>
 
@@ -496,29 +454,48 @@
             measurementId: "G-8FLEV4HVY2"
         };
 
-        // Initialize Firebase safely
-        let app, auth, db, provider;
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-            provider = new GoogleAuthProvider();
-        } catch (err) {
-            console.warn("Firebase init fallback to offline mode:", err);
-        }
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
 
         // Global State
         let currentUser = null;
         let records = [];
-        let activeCategoryTab = 'ALL'; // 'ALL' | 'OWED_TO_ME' | 'I_OWE'
+        let activeCategory = 'ALL';
         let unsubscribeSnapshot = null;
         let currentAttachment = null;
         let activePaymentId = null;
-        let pendingDeleteId = null;
-        let isPro = localStorage.getItem('bh_is_pro') === 'true';
-        let savedLicenseCode = localStorage.getItem('bh_license_code') || '';
-        const FREE_TRIAL_LIMIT = 3;
-        let trialsUsed = parseInt(localStorage.getItem('bh_trials_used') || '0', 10);
+
+        // Account-Scoped License & Trial State (Isolated per User UID or 'guest')
+        const FREE_LIMIT = 3;
+        let isPro = false;
+        let savedLicenseCode = '';
+        let trialUsed = 0;
+
+        function getScopeKey(base) {
+            const scope = currentUser ? currentUser.uid : 'guest';
+            return `${base}_${scope}`;
+        }
+
+        function loadAccountQuotaAndLicense() {
+            // Clean legacy global keys so old shared browser status never leaks across accounts
+            localStorage.removeItem('bh_is_pro');
+            localStorage.removeItem('bh_license_code');
+            localStorage.removeItem('bh_trial_used');
+
+            isPro = localStorage.getItem(getScopeKey('bh_is_pro')) === 'true';
+            savedLicenseCode = localStorage.getItem(getScopeKey('bh_license_code')) || '';
+            trialUsed = parseInt(localStorage.getItem(getScopeKey('bh_trial_used')) || '0', 10);
+        }
+
+        function saveAccountQuotaAndLicense() {
+            localStorage.setItem(getScopeKey('bh_is_pro'), isPro ? 'true' : 'false');
+            localStorage.setItem(getScopeKey('bh_license_code'), savedLicenseCode);
+            localStorage.setItem(getScopeKey('bh_trial_used'), String(trialUsed));
+        }
 
         // Generate Dynamic High-Res App Icon via Canvas for iOS/Android Home Screen
         function generateAppIcon() {
@@ -556,7 +533,6 @@
             document.getElementById('apple-touch-icon').href = dataUrl;
             document.getElementById('favicon').href = dataUrl;
             document.getElementById('modal-app-icon').src = dataUrl;
-            document.getElementById('header-app-icon').src = dataUrl;
         }
 
         // Theme Management
@@ -590,18 +566,13 @@
             window._toastTimer = setTimeout(() => toast.classList.add('hidden'), 3200);
         };
 
-        // Update Pro / 3x Free Trial Badge UI
-        function getRemainingTrials() {
-            return Math.max(0, FREE_TRIAL_LIMIT - trialsUsed);
-        }
-
+        // Update Pro / Free Trial Badge UI
         function updateLicenseUI() {
             const proBadge = document.getElementById('pro-badge');
             const freeBadge = document.getElementById('free-badge');
             const trialCount = document.getElementById('trial-count');
             const activeBox = document.getElementById('license-active-box');
             const formBox = document.getElementById('license-form-box');
-            const modalStatusText = document.getElementById('modal-trial-status-text');
 
             if (isPro) {
                 proBadge.classList.remove('hidden');
@@ -609,85 +580,58 @@
                 activeBox.classList.remove('hidden');
                 formBox.classList.add('hidden');
                 document.getElementById('active-license-key-text').textContent = `Kod Aktif: ${savedLicenseCode}`;
+                document.getElementById('active-license-owner-text').textContent = currentUser
+                    ? `Diikat pada akaun: ${currentUser.email}`
+                    : 'Mod Tetamu (Peranti ini)';
             } else {
                 proBadge.classList.add('hidden');
                 freeBadge.classList.remove('hidden');
                 activeBox.classList.add('hidden');
                 formBox.classList.remove('hidden');
-                const remaining = getRemainingTrials();
+                const effectiveUsed = Math.max(trialUsed, records.length);
+                const remaining = Math.max(0, FREE_LIMIT - effectiveUsed);
                 trialCount.textContent = remaining;
-                if (modalStatusText) {
-                    modalStatusText.textContent = `${remaining}/${FREE_TRIAL_LIMIT} Baki (${trialsUsed} telah digunakan)`;
-                }
             }
         }
 
-        // Category Tab & Form Direction Controls
-        window.setCategoryTab = function(tab) {
-            activeCategoryTab = tab;
-            const tabs = ['ALL', 'OWED_TO_ME', 'I_OWE'];
-            tabs.forEach(t => {
-                const el = document.getElementById(`tab-${t}`);
-                if (!el) return;
-                if (t === tab) {
-                    if (t === 'OWED_TO_ME') {
-                        el.className = "py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white shadow-sm";
-                    } else if (t === 'I_OWE') {
-                        el.className = "py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-rose-600 text-white shadow-sm";
-                    } else {
-                        el.className = "py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm";
-                    }
+        // Category Tab Switcher
+        window.setCategoryTab = function(cat) {
+            activeCategory = cat;
+            ['ALL', 'OWED_TO_ME', 'I_OWE'].forEach(c => {
+                const btn = document.getElementById('tab-' + c);
+                if (c === cat) {
+                    btn.className = "py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm";
                 } else {
-                    el.className = "py-2.5 px-2 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800";
+                    btn.className = "py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
                 }
             });
             renderRecords();
         };
 
-        window.selectDirection = function(dir) {
-            document.getElementById('debt-direction').value = dir;
-            const btnOwed = document.getElementById('dir-btn-OWED_TO_ME');
-            const btnIOwe = document.getElementById('dir-btn-I_OWE');
-            const chkOwed = document.getElementById('dir-check-OWED_TO_ME');
-            const chkIOwe = document.getElementById('dir-check-I_OWE');
-            const nameLabel = document.getElementById('person-name-label');
-            const nameInput = document.getElementById('debtor-name');
-
-            if (dir === 'OWED_TO_ME') {
-                btnOwed.className = "p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 text-left transition";
-                btnIOwe.className = "p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-left transition opacity-75 hover:opacity-100";
-                chkOwed.classList.remove('hidden');
-                chkIOwe.classList.add('hidden');
-                nameLabel.textContent = "Nama Peminjam (Siapa Hutang Saya) *";
-                nameInput.placeholder = "Contoh: Ahmad Albab";
-            } else {
-                btnIOwe.className = "p-3 rounded-2xl border-2 border-rose-600 bg-rose-50 dark:bg-rose-950/50 text-left transition";
-                btnOwed.className = "p-3 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-left transition opacity-75 hover:opacity-100";
-                chkIOwe.classList.remove('hidden');
-                chkOwed.classList.add('hidden');
-                nameLabel.textContent = "Nama Pemberi Pinjam / Kedai *";
-                nameInput.placeholder = "Contoh: Kedai Pak Ali / Bank";
-            }
+        // Dynamic Form Labels based on Category Radio
+        window.updateFormLabels = function() {
+            const isIOwe = document.getElementById('type-i-owe').checked;
+            document.getElementById('label-person-name').textContent = isIOwe
+                ? "Nama Pemberi Hutang / Kedai *"
+                : "Nama Peminjam *";
+            document.getElementById('debtor-name').placeholder = isIOwe
+                ? "Contoh: Kedai Runcit Ali / Kassim"
+                : "Contoh: Ahmad Albab";
         };
 
         // Firebase Authentication (Strict signInWithPopup ONLY for Safari iOS/iPadOS compatibility)
         window.handleAuthClick = async function() {
-            if (currentUser || !auth) return;
+            if (currentUser) return;
             try {
                 await signInWithPopup(auth, provider);
                 showToast("Berjaya log masuk dengan Google!");
             } catch (error) {
                 console.error("Auth Error:", error);
-                if (error.code === 'auth/unauthorized-domain') {
-                    showToast("Domain pratonton belum didaftarkan di Firebase. Mod Tetamu kekal aktif!");
-                } else {
-                    showToast("Log masuk dibatalkan atau terhad dalam pratonton.");
-                }
+                showToast("Gagal log masuk: " + (error.message || "Sila cuba lagi"));
             }
         };
 
         window.logoutUser = async function() {
-            if (!auth) return;
             try {
                 await signOut(auth);
                 showToast("Anda telah log keluar.");
@@ -696,99 +640,101 @@
             }
         };
 
-        if (auth) {
-            onAuthStateChanged(auth, async (user) => {
-                currentUser = user;
-                const authBtn = document.getElementById('auth-btn');
-                const userBanner = document.getElementById('user-banner');
-                const syncStatus = document.getElementById('sync-status-text');
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            const authBtn = document.getElementById('auth-btn');
+            const userBanner = document.getElementById('user-banner');
+            const syncStatus = document.getElementById('sync-status-text');
 
-                if (unsubscribeSnapshot) {
-                    unsubscribeSnapshot();
-                    unsubscribeSnapshot = null;
-                }
-
-                if (user) {
-                    authBtn.classList.add('hidden');
-                    userBanner.classList.remove('hidden');
-                    document.getElementById('user-name').textContent = user.displayName || 'Pengguna Google';
-                    document.getElementById('user-email').textContent = user.email || '';
-
-                    if (user.photoURL) {
-                        const avatar = document.getElementById('user-avatar');
-                        avatar.src = user.photoURL;
-                        avatar.classList.remove('hidden');
-                        document.getElementById('user-avatar-fallback').classList.add('hidden');
-                    }
-
-                    syncStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0"></span> Awan Firebase Aktif`;
-
-                    const q = query(collection(db, `users/${user.uid}/debts`), orderBy("createdAt", "desc"));
-                    unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
-                        records = snapshot.docs.map(doc => ({ direction: 'OWED_TO_ME', id: doc.id, ...doc.data() }));
-                        localStorage.setItem('bh_records_backup', JSON.stringify(records));
-                        renderRecords();
-                        updateLicenseUI();
-                    }, (err) => {
-                        console.error("Firestore sync error:", err);
-                        loadLocalRecords();
-                    });
-
-                    try {
-                        const userMetaSnap = await getDoc(doc(db, `users/${user.uid}/meta/profile`));
-                        if (userMetaSnap.exists()) {
-                            const meta = userMetaSnap.data();
-                            if (meta.isPro) {
-                                isPro = true;
-                                savedLicenseCode = meta.licenseCode || 'CLOUD-PRO';
-                                localStorage.setItem('bh_is_pro', 'true');
-                                localStorage.setItem('bh_license_code', savedLicenseCode);
-                            }
-                            if (typeof meta.trialsUsed === 'number' && meta.trialsUsed > trialsUsed) {
-                                trialsUsed = meta.trialsUsed;
-                                localStorage.setItem('bh_trials_used', String(trialsUsed));
-                            }
-                            updateLicenseUI();
-                        }
-                    } catch (e) {}
-
-                } else {
-                    authBtn.classList.remove('hidden');
-                    userBanner.classList.add('hidden');
-                    syncStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 inline-block shrink-0"></span> Mod Tetamu (Offline)`;
-                    loadLocalRecords();
-                }
-            });
-        }
-
-        function loadLocalRecords() {
-            // Clean up any legacy sample records if present so app starts completely empty
-            if (!localStorage.getItem('bh_clean_start_v3')) {
-                localStorage.removeItem('bh_initialized_v2');
-                const existingRaw = localStorage.getItem('bh_records_guest');
-                if (existingRaw) {
-                    try {
-                        const parsed = JSON.parse(existingRaw);
-                        const filteredUserOnly = parsed.filter(r => r.id !== 'sample_1' && r.id !== 'sample_2');
-                        localStorage.setItem('bh_records_guest', JSON.stringify(filteredUserOnly));
-                    } catch (e) {
-                        localStorage.removeItem('bh_records_guest');
-                    }
-                }
-                localStorage.setItem('bh_clean_start_v3', 'true');
+            if (unsubscribeSnapshot) {
+                unsubscribeSnapshot();
+                unsubscribeSnapshot = null;
             }
 
-            const raw = localStorage.getItem('bh_records_guest');
-            records = raw ? JSON.parse(raw).map(r => ({ direction: 'OWED_TO_ME', ...r })) : [];
+            // Reset & load state strictly for the currently active account (or guest)
+            isPro = false;
+            savedLicenseCode = '';
+            trialUsed = 0;
+            loadAccountQuotaAndLicense();
+            updateLicenseUI();
+
+            if (user) {
+                authBtn.classList.add('hidden');
+                userBanner.classList.remove('hidden');
+                document.getElementById('user-name').textContent = user.displayName || 'Pengguna Google';
+                document.getElementById('user-email').textContent = user.email || '';
+
+                if (user.photoURL) {
+                    const avatar = document.getElementById('user-avatar');
+                    avatar.src = user.photoURL;
+                    avatar.classList.remove('hidden');
+                    document.getElementById('user-avatar-fallback').classList.add('hidden');
+                } else {
+                    document.getElementById('user-avatar').classList.add('hidden');
+                    document.getElementById('user-avatar-fallback').classList.remove('hidden');
+                    document.getElementById('user-avatar-fallback').textContent = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
+                }
+
+                syncStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Awan Firebase Aktif`;
+
+                // Sync Cloud Records for this specific UID
+                const q = query(collection(db, `users/${user.uid}/debts`), orderBy("createdAt", "desc"));
+                unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+                    records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    localStorage.setItem(getScopeKey('bh_records_backup'), JSON.stringify(records));
+                    renderRecords();
+                    updateLicenseUI();
+                }, (err) => {
+                    console.error("Firestore sync error:", err);
+                    loadLocalRecords();
+                });
+
+                // Strictly verify Pro & Trial quota from THIS account's Firestore profile
+                try {
+                    const userMetaSnap = await getDoc(doc(db, `users/${user.uid}/meta/profile`));
+                    if (userMetaSnap.exists()) {
+                        const meta = userMetaSnap.data();
+                        if (meta.isPro === true) {
+                            isPro = true;
+                            savedLicenseCode = meta.licenseCode || 'CLOUD-PRO';
+                        } else {
+                            isPro = false;
+                            savedLicenseCode = '';
+                        }
+                        if (typeof meta.trialUsed === 'number') {
+                            trialUsed = Math.max(trialUsed, meta.trialUsed);
+                        }
+                    } else {
+                        // Brand new account with no profile document -> strictly FREE
+                        isPro = false;
+                        savedLicenseCode = '';
+                    }
+                    saveAccountQuotaAndLicense();
+                    updateLicenseUI();
+                } catch (e) {
+                    console.warn("Profile fetch fallback:", e);
+                }
+
+            } else {
+                authBtn.classList.remove('hidden');
+                userBanner.classList.add('hidden');
+                syncStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span> Mod Tetamu (Offline)`;
+                loadLocalRecords();
+            }
+        });
+
+        function loadLocalRecords() {
+            const raw = localStorage.getItem(getScopeKey('bh_records')) || localStorage.getItem(getScopeKey('bh_records_backup'));
+            records = raw ? JSON.parse(raw) : [];
             renderRecords();
             updateLicenseUI();
         }
 
         function saveLocalRecords() {
-            localStorage.setItem('bh_records_guest', JSON.stringify(records));
+            localStorage.setItem(getScopeKey('bh_records'), JSON.stringify(records));
         }
 
-        // License Code Activation
+        // License Code Activation (Binds strictly to current account UID or guest)
         window.activateLicense = async function() {
             const input = document.getElementById('license-code-input');
             const code = input.value.trim().toUpperCase();
@@ -803,18 +749,18 @@
 
             let valid = false;
 
-            if (db) {
-                try {
-                    const licRef = doc(db, "licenses", code);
-                    const licSnap = await getDoc(licRef);
-                    if (licSnap.exists() && licSnap.data().active !== false) {
-                        valid = true;
-                    }
-                } catch (e) {
-                    console.warn("Offline license check fallback:", e);
+            // 1. Check Firestore /licenses collection
+            try {
+                const licRef = doc(db, "licenses", code);
+                const licSnap = await getDoc(licRef);
+                if (licSnap.exists() && licSnap.data().active !== false) {
+                    valid = true;
                 }
+            } catch (e) {
+                console.warn("Offline license check fallback:", e);
             }
 
+            // 2. Offline / Master Test Keys fallback
             const offlineValidKeys = ["TEST1234", "PRO2026", "HUTANGPRO", "NORDINPRO"];
             if (offlineValidKeys.includes(code)) {
                 valid = true;
@@ -826,23 +772,24 @@
             if (valid) {
                 isPro = true;
                 savedLicenseCode = code;
-                localStorage.setItem('bh_is_pro', 'true');
-                localStorage.setItem('bh_license_code', code);
+                saveAccountQuotaAndLicense();
 
-                if (currentUser && db) {
+                if (currentUser) {
                     try {
                         await setDoc(doc(db, `users/${currentUser.uid}/meta/profile`), {
                             isPro: true,
                             licenseCode: code,
+                            email: currentUser.email || '',
                             activatedAt: new Date().toISOString()
                         }, { merge: true });
                     } catch (e) {}
                 }
 
+                input.value = "";
                 updateLicenseUI();
-                showToast("Tahniah! Lesen PRO berjaya diaktifkan.");
+                showToast("Tahniah! Lesen PRO diaktifkan untuk akaun ini.");
             } else {
-                showToast("Kod lesen tidak sah. Cuba TEST1234 atau PRO2026.");
+                showToast("Kod lesen tidak sah atau telah dinyahaktifkan.");
             }
         };
 
@@ -894,11 +841,11 @@
             document.getElementById('file-preview-box').classList.add('hidden');
         };
 
-        // CRUD Operations with Strict 3x Free Trial Quota
+        // CRUD Operations with 3-Trial Quota Enforcement
         window.openRecordModal = function(editId = null) {
-            const remaining = getRemainingTrials();
-            if (!editId && !isPro && remaining <= 0) {
-                showToast("Kuota 3x percubaan percuma tamat! Sila masukkan Kod Lesen Pro.");
+            const effectiveUsed = Math.max(trialUsed, records.length);
+            if (!editId && !isPro && effectiveUsed >= FREE_LIMIT) {
+                showToast("Kuota 3 percubaan percuma akaun ini telah habis! Masukkan Kod Lesen Pro.");
                 openLicenseModal();
                 return;
             }
@@ -907,24 +854,17 @@
             form.reset();
             clearUploadedFile();
 
-            const trialHint = document.getElementById('modal-trial-hint');
-            if (isPro) {
-                trialHint.textContent = "Akaun PRO • Rekod Tanpa Had";
-                trialHint.className = "text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5";
-            } else if (!editId) {
-                trialHint.textContent = `Baki percubaan percuma: ${remaining}/${FREE_TRIAL_LIMIT} kali`;
-                trialHint.className = "text-[11px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5";
-            } else {
-                trialHint.textContent = "Mengemaskini rekod sedia ada (tidak tolak kuota)";
-                trialHint.className = "text-[11px] text-slate-500 font-medium mt-0.5";
-            }
-
             if (editId) {
                 const rec = records.find(r => r.id === editId);
                 if (!rec) return;
                 document.getElementById('modal-title').textContent = "Kemaskini Rekod Hutang";
                 document.getElementById('record-id').value = rec.id;
-                selectDirection(rec.direction || 'OWED_TO_ME');
+                if (rec.type === 'I_OWE') {
+                    document.getElementById('type-i-owe').checked = true;
+                } else {
+                    document.getElementById('type-owed-to-me').checked = true;
+                }
+                updateFormLabels();
                 document.getElementById('debtor-name').value = rec.name;
                 document.getElementById('debtor-phone').value = rec.phone || '';
                 document.getElementById('debt-amount').value = rec.amount;
@@ -940,8 +880,12 @@
             } else {
                 document.getElementById('modal-title').textContent = "Tambah Rekod Hutang";
                 document.getElementById('record-id').value = "";
-                const defaultDir = activeCategoryTab === 'I_OWE' ? 'I_OWE' : 'OWED_TO_ME';
-                selectDirection(defaultDir);
+                if (activeCategory === 'I_OWE') {
+                    document.getElementById('type-i-owe').checked = true;
+                } else {
+                    document.getElementById('type-owed-to-me').checked = true;
+                }
+                updateFormLabels();
                 document.getElementById('debt-date').value = new Date().toISOString().split('T')[0];
             }
 
@@ -955,14 +899,15 @@
         window.saveRecord = async function(e) {
             e.preventDefault();
             const existingId = document.getElementById('record-id').value;
-            const isNewRecord = !existingId;
+            const isNew = !existingId;
             const id = existingId || ('debt_' + Date.now());
             const amount = parseFloat(document.getElementById('debt-amount').value) || 0;
             const paid = parseFloat(document.getElementById('debt-paid').value) || 0;
+            const debtType = document.querySelector('input[name="debt-type"]:checked').value;
 
             const recordData = {
                 id,
-                direction: document.getElementById('debt-direction').value || 'OWED_TO_ME',
+                type: debtType,
                 name: document.getElementById('debtor-name').value.trim(),
                 phone: document.getElementById('debtor-phone').value.trim(),
                 amount,
@@ -977,22 +922,22 @@
 
             closeRecordModal();
 
-            // Consume 1 trial credit permanently if new record in Free mode
-            if (isNewRecord && !isPro) {
-                trialsUsed = Math.min(FREE_TRIAL_LIMIT, trialsUsed + 1);
-                localStorage.setItem('bh_trials_used', String(trialsUsed));
+            // Increment persistent trial counter on new record creation
+            if (isNew && !isPro) {
+                trialUsed = Math.max(trialUsed, records.length) + 1;
+                saveAccountQuotaAndLicense();
                 updateLicenseUI();
             }
 
-            if (currentUser && db) {
+            if (currentUser) {
                 try {
                     await setDoc(doc(db, `users/${currentUser.uid}/debts`, id), recordData);
-                    if (isNewRecord && !isPro) {
-                        await setDoc(doc(db, `users/${currentUser.uid}/meta/profile`), { trialsUsed }, { merge: true });
+                    if (isNew && !isPro) {
+                        await setDoc(doc(db, `users/${currentUser.uid}/meta/profile`), {
+                            trialUsed: trialUsed
+                        }, { merge: true });
                     }
-                    showToast(isNewRecord && !isPro
-                        ? `Rekod disimpan! Baki percubaan: ${getRemainingTrials()}/${FREE_TRIAL_LIMIT}`
-                        : "Rekod disimpan ke awan Firebase!");
+                    showToast("Rekod disimpan ke awan Firebase!");
                 } catch (err) {
                     console.error(err);
                     showToast("Ralat simpan awan, disimpan secara lokal.");
@@ -1000,9 +945,7 @@
                 }
             } else {
                 upsertLocalRecord(recordData);
-                showToast(isNewRecord && !isPro
-                    ? `Rekod disimpan! Baki percubaan: ${getRemainingTrials()}/${FREE_TRIAL_LIMIT}`
-                    : "Rekod disimpan (Mod Tetamu).");
+                showToast("Rekod disimpan (Mod Tetamu).");
             }
         };
 
@@ -1015,26 +958,9 @@
             updateLicenseUI();
         }
 
-        // Custom Delete Modal Flow
-        window.deleteRecord = function(id) {
-            const rec = records.find(r => r.id === id);
-            if (!rec) return;
-            pendingDeleteId = id;
-            document.getElementById('delete-target-text').textContent = `Rekod hutang "${rec.name}" akan dipadam secara kekal.`;
-            document.getElementById('delete-modal').classList.remove('hidden');
-        };
-
-        window.closeDeleteModal = function() {
-            pendingDeleteId = null;
-            document.getElementById('delete-modal').classList.add('hidden');
-        };
-
-        window.confirmDeleteRecord = async function() {
-            const id = pendingDeleteId;
-            closeDeleteModal();
-            if (!id) return;
-
-            if (currentUser && db) {
+        window.deleteRecord = async function(id) {
+            if (!confirm("Padam rekod hutang ini secara kekal?")) return;
+            if (currentUser) {
                 try {
                     await deleteDoc(doc(db, `users/${currentUser.uid}/debts`, id));
                     showToast("Rekod dipadam.");
@@ -1056,8 +982,8 @@
             if (!rec) return;
             activePaymentId = id;
             const bal = Math.max(0, rec.amount - (rec.paid || 0));
-            const isIOwe = rec.direction === 'I_OWE';
-            document.getElementById('pay-debtor-name').textContent = `${rec.name} (${isIOwe ? 'Saya Hutang Siapa' : 'Siapa Hutang Saya'})`;
+            const isIOwe = rec.type === 'I_OWE';
+            document.getElementById('pay-debtor-name').textContent = `${rec.name} (${isIOwe ? 'Saya Hutang Dia' : 'Dia Hutang Saya'})`;
             document.getElementById('pay-current-balance').textContent = `RM ${bal.toFixed(2)}`;
             document.getElementById('pay-input-label').textContent = isIOwe ? "Jumlah Saya Bayar (RM)" : "Jumlah Bayaran Diterima (RM)";
             document.getElementById('pay-input-amount').value = "";
@@ -1092,7 +1018,7 @@
 
             closePaymentModal();
 
-            if (currentUser && db) {
+            if (currentUser) {
                 await setDoc(doc(db, `users/${currentUser.uid}/debts`, rec.id), updated);
                 showToast("Bayaran dikemaskini!");
             } else {
@@ -1101,22 +1027,19 @@
             }
         };
 
-        // Share to WhatsApp (Customized by Category: Siapa Hutang Saya vs Saya Hutang Siapa)
+        // Share to WhatsApp
         window.shareWhatsApp = function(id) {
             const rec = records.find(r => r.id === id);
             if (!rec) return;
 
             const bal = Math.max(0, rec.amount - (rec.paid || 0));
             const statusText = bal <= 0 ? "✅ SUDAH LUNAS" : "⏳ BELUM SELESAI";
-            const isIOwe = rec.direction === 'I_OWE';
+            const isIOwe = rec.type === 'I_OWE';
+            const titleHeader = isIOwe ? "*REKOD HUTANG SAYA KEPADA ANDA*" : "*PENYATA REKOD HUTANG*";
 
-            let msg = isIOwe
-                ? `*MAKLUMAN BAYARAN HUTANG SAYA*\n`
-                : `*PENYATA REKOD HUTANG*\n`;
+            let msg = `${titleHeader}\n`;
             msg += `━━━━━━━━━━━━━━━━━━\n`;
-            msg += isIOwe
-                ? `🏢 *Kepada:* ${rec.name}\n`
-                : `👤 *Nama Peminjam:* ${rec.name}\n`;
+            msg += `👤 *Nama:* ${rec.name}\n`;
             msg += `📅 *Tarikh Pinjam:* ${formatDate(rec.date)}\n`;
             if (rec.dueDate) msg += `⏰ *Tarikh Janji:* ${formatDate(rec.dueDate)}\n`;
             msg += `💰 *Jumlah Asal:* RM ${rec.amount.toFixed(2)}\n`;
@@ -1176,47 +1099,37 @@
             let owedToMeUnpaid = 0, owedToMeCount = 0;
             let iOweUnpaid = 0, iOweCount = 0;
             let totalPaid = 0, countPaid = 0;
-            let totalTabOwed = 0, totalTabIOwe = 0;
 
             records.forEach(r => {
-                const dir = r.direction || 'OWED_TO_ME';
                 const amt = Number(r.amount) || 0;
                 const pd = Number(r.paid) || 0;
                 const bal = Math.max(0, amt - pd);
+                const rType = r.type || 'OWED_TO_ME';
 
                 totalPaid += pd;
-                if (bal <= 0) countPaid++;
-
-                if (dir === 'I_OWE') {
-                    totalTabIOwe++;
-                    iOweUnpaid += bal;
-                    if (bal > 0) iOweCount++;
+                if (bal <= 0) {
+                    countPaid++;
                 } else {
-                    totalTabOwed++;
-                    owedToMeUnpaid += bal;
-                    if (bal > 0) owedToMeCount++;
+                    if (rType === 'I_OWE') {
+                        iOweUnpaid += bal;
+                        iOweCount++;
+                    } else {
+                        owedToMeUnpaid += bal;
+                        owedToMeCount++;
+                    }
                 }
             });
 
-            const netBalance = owedToMeUnpaid - iOweUnpaid;
-            const netEl = document.getElementById('stat-net');
-            netEl.textContent = `${netBalance >= 0 ? '+' : '-'}RM ${Math.abs(netBalance).toFixed(2)}`;
-            netEl.className = `text-2xl font-extrabold mt-2 ${netBalance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
-
             document.getElementById('stat-owed-to-me').textContent = `RM ${owedToMeUnpaid.toFixed(2)}`;
-            document.getElementById('stat-owed-to-me-count').textContent = `${owedToMeCount} orang belum lunas`;
+            document.getElementById('stat-owed-to-me-count').textContent = `${owedToMeCount} orang belum bayar`;
             document.getElementById('stat-i-owe').textContent = `RM ${iOweUnpaid.toFixed(2)}`;
-            document.getElementById('stat-i-owe-count').textContent = `${iOweCount} tanggungan aktif`;
-            document.getElementById('stat-paid-summary').textContent = `${countPaid} rekod (RM ${totalPaid.toFixed(2)})`;
-
-            // Update Tab Counters
-            document.getElementById('count-tab-all').textContent = records.length;
-            document.getElementById('count-tab-owed').textContent = totalTabOwed;
-            document.getElementById('count-tab-iowe').textContent = totalTabIOwe;
+            document.getElementById('stat-i-owe-count').textContent = `${iOweCount} hutang belum lunas`;
+            document.getElementById('stat-paid').textContent = `RM ${totalPaid.toFixed(2)}`;
+            document.getElementById('stat-paid-count').textContent = `${countPaid} rekod selesai bayar`;
 
             const filtered = records.filter(r => {
-                const dir = r.direction || 'OWED_TO_ME';
-                if (activeCategoryTab !== 'ALL' && dir !== activeCategoryTab) return false;
+                const rType = r.type || 'OWED_TO_ME';
+                if (activeCategory !== 'ALL' && rType !== activeCategory) return false;
 
                 const bal = Math.max(0, (Number(r.amount) || 0) - (Number(r.paid) || 0));
                 const isPaid = bal <= 0;
@@ -1237,35 +1150,34 @@
                         <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 mx-auto flex items-center justify-center text-2xl">
                             <i class="fa-solid fa-folder-open"></i>
                         </div>
-                        <h3 class="font-bold text-slate-800 dark:text-slate-200">Tiada Rekod Hutang Lagi</h3>
-                        <p class="text-xs text-slate-500 max-w-xs mx-auto">Klik butang <strong>Tambah Rekod</strong> untuk mula merekod sama ada <em>Siapa Hutang Saya</em> atau <em>Saya Hutang Siapa</em>.</p>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200">Tiada Rekod Ditemui</h3>
+                        <p class="text-xs text-slate-500 max-w-xs mx-auto">Klik butang <strong>Tambah Rekod</strong> untuk mula mencatat sama ada orang berhutang dengan anda atau anda berhutang dengan orang lain.</p>
                     </div>`;
                 return;
             }
 
             container.innerHTML = filtered.map(r => {
-                const dir = r.direction || 'OWED_TO_ME';
-                const isIOwe = dir === 'I_OWE';
                 const amt = Number(r.amount) || 0;
                 const pd = Number(r.paid) || 0;
                 const bal = Math.max(0, amt - pd);
                 const isPaid = bal <= 0;
+                const isIOwe = r.type === 'I_OWE';
                 const pct = amt > 0 ? Math.min(100, Math.round((pd / amt) * 100)) : 100;
 
-                const categoryBadge = isIOwe
-                    ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-rose-50 dark:bg-rose-950/70 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60"><i class="fa-solid fa-arrow-up-right mr-1"></i>Saya Hutang</span>`
-                    : `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60"><i class="fa-solid fa-arrow-down-left mr-1"></i>Hutang Saya</span>`;
+                const typeBadge = isIOwe
+                    ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-rose-50 dark:bg-rose-950/70 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60"><i class="fa-solid fa-arrow-up-right mr-1"></i>SAYA HUTANG</span>`
+                    : `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-50 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60"><i class="fa-solid fa-arrow-down-left mr-1"></i>HUTANG SAYA</span>`;
 
                 return `
-                <div class="bg-white dark:bg-slate-900 border-l-4 ${isIOwe ? 'border-l-rose-500' : 'border-l-emerald-500'} border-y border-r border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition">
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm hover:border-emerald-300 dark:hover:border-emerald-800 transition">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="space-y-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
-                                ${categoryBadge}
+                                ${typeBadge}
                                 <h4 class="font-extrabold text-base text-slate-900 dark:text-white truncate">${escapeHtml(r.name)}</h4>
                                 ${isPaid
                                     ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">LUNAS</span>`
-                                    : `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${isIOwe ? 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400' : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300'}">BAKI RM ${bal.toFixed(2)}</span>`
+                                    : `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${isIOwe ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400' : 'bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400'}">BAKI RM ${bal.toFixed(2)}</span>`
                                 }
                                 ${r.attachment ? `<button onclick="viewAttachment('${r.id}')" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"><i class="fa-solid fa-paperclip"></i> Fail</button>` : ''}
                             </div>
@@ -1295,7 +1207,7 @@
                     <div class="flex flex-wrap items-center justify-end gap-2 mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800/80 no-print">
                         ${!isPaid ? `
                         <button onclick="openPaymentModal('${r.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 text-xs font-bold transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-coins"></i> ${isIOwe ? 'Bayar Hutang' : 'Terima Bayaran'}
+                            <i class="fa-solid fa-coins"></i> Bayar
                         </button>` : ''}
                         <button onclick="shareWhatsApp('${r.id}')" class="px-3 py-1.5 rounded-xl bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-400 hover:bg-green-100 text-xs font-bold transition flex items-center gap-1.5">
                             <i class="fa-brands fa-whatsapp text-sm"></i> Kongsi WS
@@ -1320,9 +1232,9 @@
             const headers = ["Kategori", "Nama", "Telefon", "Tarikh Pinjam", "Tarikh Janji", "Jumlah (RM)", "Dibayar (RM)", "Baki (RM)", "Catatan"];
             const rows = records.map(r => {
                 const bal = Math.max(0, (Number(r.amount) || 0) - (Number(r.paid) || 0));
-                const cat = r.direction === 'I_OWE' ? 'Saya Hutang Siapa' : 'Siapa Hutang Saya';
+                const kat = r.type === 'I_OWE' ? 'Saya Hutang Siapa' : 'Siapa Hutang Saya';
                 return [
-                    `"${cat}"`,
+                    `"${kat}"`,
                     `"${(r.name || '').replace(/"/g, '""')}"`,
                     `"${(r.phone || '').replace(/"/g, '""')}"`,
                     r.date || '',
@@ -1345,10 +1257,7 @@
         };
 
         // Modal Controls
-        window.openLicenseModal = () => {
-            updateLicenseUI();
-            document.getElementById('license-modal').classList.remove('hidden');
-        };
+        window.openLicenseModal = () => document.getElementById('license-modal').classList.remove('hidden');
         window.closeLicenseModal = () => document.getElementById('license-modal').classList.add('hidden');
         window.openInstallModal = () => document.getElementById('install-modal').classList.remove('hidden');
         window.closeInstallModal = () => document.getElementById('install-modal').classList.add('hidden');
@@ -1371,6 +1280,7 @@
         // Boot Application
         initTheme();
         generateAppIcon();
+        loadAccountQuotaAndLicense();
         loadLocalRecords();
     </script>
 </body>
