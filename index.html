@@ -334,7 +334,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: Kod Lesen Pro (License Code Activation) -->
+    <!-- MODAL 3: Kod Lesen Pro (1 Kod = 1 Akaun Google Eksklusif) -->
     <div id="license-modal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-md shadow-2xl p-6 space-y-4">
             <div class="flex items-center justify-between">
@@ -344,7 +344,7 @@
                     </div>
                     <div>
                         <h3 class="font-extrabold text-base text-slate-900 dark:text-white">Pengaktifan Lesen Pro</h3>
-                        <p class="text-xs text-slate-500">Eksklusif untuk akaun aktif anda</p>
+                        <p class="text-xs text-slate-500">1 Kod Lesen = 1 Akaun Google Sahaja</p>
                     </div>
                 </div>
                 <button onclick="closeLicenseModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
@@ -358,15 +358,29 @@
 
             <div id="license-form-box" class="space-y-3">
                 <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Setiap akaun diberikan <strong>3 kali percubaan percuma</strong>. Masukkan <strong>Kod Lesen Pro</strong> untuk mengaktifkan rekod tanpa had pada akaun ini.
+                    Setiap akaun diberikan <strong>3 kali percubaan percuma</strong>. Kod Lesen Pro hanya boleh ditebus <strong>sekali sahaja</strong> dan akan dikunci kekal pada akaun Google anda.
                 </p>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Masukkan Kod Lesen</label>
-                    <input type="text" id="license-code-input" placeholder="Contoh: PRO-XXXX-XXXX" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono uppercase tracking-wider focus:ring-2 focus:ring-amber-500 outline-none">
+
+                <!-- Amaran jika belum log masuk Google -->
+                <div id="license-login-warning" class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/60 space-y-2">
+                    <p class="text-xs font-semibold text-amber-800 dark:text-amber-300">
+                        <i class="fa-solid fa-circle-info mr-1"></i> Sila <strong>Log Masuk Google</strong> terlebih dahulu sebelum menebus kod lesen supaya lesen anda disimpan kekal pada akaun tersebut.
+                    </p>
+                    <button type="button" onclick="closeLicenseModal(); handleAuthClick();" class="w-full py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition">
+                        <i class="fa-brands fa-google"></i> Log Masuk Google Sekarang
+                    </button>
                 </div>
-                <button id="verify-license-btn" onclick="activateLicense()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-sm shadow-md transition">
-                    Aktifkan Kod Lesen
-                </button>
+
+                <div id="license-input-group" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Masukkan Kod Lesen</label>
+                        <input type="text" id="license-code-input" placeholder="Contoh: PRO8899" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-mono uppercase tracking-wider focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                    <button id="verify-license-btn" onclick="activateLicense()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-sm shadow-md transition">
+                        Tebus & Aktifkan Kod Lesen
+                    </button>
+                </div>
+
                 <div class="pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
                     <a href="https://wa.me/601111111111?text=Salam%20Admin,%20saya%20nak%20dapatkan%20Kod%20Lesen%20Pro%20Buku%20Hutang%20(RM5)" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
                         <i class="fa-brands fa-whatsapp text-sm"></i> Belum ada kod? Dapatkan Lesen Pro (RM5)
@@ -437,7 +451,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, deleteDoc, getDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, getDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         // Anti-Leak GitHub Secret Scanning Protection (Base64 Split & Reassembly)
         const _k1 = "QUl6YVN5RElFaDl6";
@@ -481,7 +495,6 @@
         }
 
         function loadAccountQuotaAndLicense() {
-            // Clean legacy global keys so old shared browser status never leaks across accounts
             localStorage.removeItem('bh_is_pro');
             localStorage.removeItem('bh_license_code');
             localStorage.removeItem('bh_trial_used');
@@ -563,16 +576,18 @@
             toast.textContent = msg;
             toast.classList.remove('hidden');
             clearTimeout(window._toastTimer);
-            window._toastTimer = setTimeout(() => toast.classList.add('hidden'), 3200);
+            window._toastTimer = setTimeout(() => toast.classList.add('hidden'), 3500);
         };
 
-        // Update Pro / Free Trial Badge UI
+        // Update Pro / Free Trial Badge & License Modal UI
         function updateLicenseUI() {
             const proBadge = document.getElementById('pro-badge');
             const freeBadge = document.getElementById('free-badge');
             const trialCount = document.getElementById('trial-count');
             const activeBox = document.getElementById('license-active-box');
             const formBox = document.getElementById('license-form-box');
+            const loginWarning = document.getElementById('license-login-warning');
+            const inputGroup = document.getElementById('license-input-group');
 
             if (isPro) {
                 proBadge.classList.remove('hidden');
@@ -581,13 +596,22 @@
                 formBox.classList.add('hidden');
                 document.getElementById('active-license-key-text').textContent = `Kod Aktif: ${savedLicenseCode}`;
                 document.getElementById('active-license-owner-text').textContent = currentUser
-                    ? `Diikat pada akaun: ${currentUser.email}`
-                    : 'Mod Tetamu (Peranti ini)';
+                    ? `Dikunci kekal pada akaun: ${currentUser.email}`
+                    : 'Mod Tetamu';
             } else {
                 proBadge.classList.add('hidden');
                 freeBadge.classList.remove('hidden');
                 activeBox.classList.add('hidden');
                 formBox.classList.remove('hidden');
+
+                if (currentUser) {
+                    loginWarning.classList.add('hidden');
+                    inputGroup.classList.remove('hidden');
+                } else {
+                    loginWarning.classList.remove('hidden');
+                    inputGroup.classList.add('hidden');
+                }
+
                 const effectiveUsed = Math.max(trialUsed, records.length);
                 const remaining = Math.max(0, FREE_LIMIT - effectiveUsed);
                 trialCount.textContent = remaining;
@@ -705,7 +729,6 @@
                             trialUsed = Math.max(trialUsed, meta.trialUsed);
                         }
                     } else {
-                        // Brand new account with no profile document -> strictly FREE
                         isPro = false;
                         savedLicenseCode = '';
                     }
@@ -734,8 +757,13 @@
             localStorage.setItem(getScopeKey('bh_records'), JSON.stringify(records));
         }
 
-        // License Code Activation (Binds strictly to current account UID or guest)
+        // Single-Use License Redemption (1 Code = 1 Google Account UID, locked in Firestore)
         window.activateLicense = async function() {
+            if (!currentUser) {
+                showToast("Sila log masuk akaun Google terlebih dahulu untuk menebus kod lesen.");
+                return;
+            }
+
             const input = document.getElementById('license-code-input');
             const code = input.value.trim().toUpperCase();
             if (!code) {
@@ -745,51 +773,73 @@
 
             const btn = document.getElementById('verify-license-btn');
             btn.disabled = true;
-            btn.textContent = "Menyemak kod...";
+            btn.textContent = "Mengesahkan kod...";
 
-            let valid = false;
-
-            // 1. Check Firestore /licenses collection
             try {
                 const licRef = doc(db, "licenses", code);
                 const licSnap = await getDoc(licRef);
-                if (licSnap.exists() && licSnap.data().active !== false) {
-                    valid = true;
+
+                if (!licSnap.exists()) {
+                    showToast("Kod lesen tidak wujud. Sila semak ejaan kod anda.");
+                    return;
                 }
-            } catch (e) {
-                console.warn("Offline license check fallback:", e);
-            }
 
-            // 2. Offline / Master Test Keys fallback
-            const offlineValidKeys = ["TEST1234", "PRO2026", "HUTANGPRO", "NORDINPRO"];
-            if (offlineValidKeys.includes(code)) {
-                valid = true;
-            }
+                const licData = licSnap.data();
 
-            btn.disabled = false;
-            btn.textContent = "Aktifkan Kod Lesen";
+                // Case 1: Code already claimed by THIS same Google account (e.g. new phone/browser)
+                if (licData.usedBy === currentUser.uid) {
+                    isPro = true;
+                    savedLicenseCode = code;
+                    saveAccountQuotaAndLicense();
+                    await setDoc(doc(db, `users/${currentUser.uid}/meta/profile`), {
+                        isPro: true,
+                        licenseCode: code,
+                        email: currentUser.email || ''
+                    }, { merge: true });
+                    input.value = "";
+                    updateLicenseUI();
+                    showToast("Status PRO dipulihkan untuk akaun anda!");
+                    return;
+                }
 
-            if (valid) {
+                // Case 2: Code already claimed by ANOTHER user or deactivated
+                if (licData.usedBy || licData.active !== true) {
+                    showToast("Kod lesen ini telah pun ditebus oleh akaun lain atau tidak lagi aktif!");
+                    return;
+                }
+
+                // Case 3: Unclaimed & Active -> Claim atomically and lock to currentUser.uid
+                await updateDoc(licRef, {
+                    active: false,
+                    usedBy: currentUser.uid,
+                    usedByEmail: currentUser.email || '',
+                    usedAt: new Date().toISOString()
+                });
+
+                await setDoc(doc(db, `users/${currentUser.uid}/meta/profile`), {
+                    isPro: true,
+                    licenseCode: code,
+                    email: currentUser.email || '',
+                    activatedAt: new Date().toISOString()
+                }, { merge: true });
+
                 isPro = true;
                 savedLicenseCode = code;
                 saveAccountQuotaAndLicense();
-
-                if (currentUser) {
-                    try {
-                        await setDoc(doc(db, `users/${currentUser.uid}/meta/profile`), {
-                            isPro: true,
-                            licenseCode: code,
-                            email: currentUser.email || '',
-                            activatedAt: new Date().toISOString()
-                        }, { merge: true });
-                    } catch (e) {}
-                }
-
                 input.value = "";
                 updateLicenseUI();
-                showToast("Tahniah! Lesen PRO diaktifkan untuk akaun ini.");
-            } else {
-                showToast("Kod lesen tidak sah atau telah dinyahaktifkan.");
+                showToast("Tahniah! Kod lesen ditebus dan dikunci kekal pada akaun ini.");
+
+            } catch (error) {
+                console.error("License activation error:", error);
+                if (error.code === 'permission-denied') {
+                    showToast("Gagal menebus kod: Kod telah digunakan atau Firestore Rules belum dikemaskini.");
+                } else {
+                    showToast("Ralat rangkaian semasa mengesahkan kod. Pastikan internet aktif.");
+                }
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Tebus & Aktifkan Kod Lesen";
             }
         };
 
@@ -922,7 +972,6 @@
 
             closeRecordModal();
 
-            // Increment persistent trial counter on new record creation
             if (isNew && !isPro) {
                 trialUsed = Math.max(trialUsed, records.length) + 1;
                 saveAccountQuotaAndLicense();
@@ -1257,7 +1306,10 @@
         };
 
         // Modal Controls
-        window.openLicenseModal = () => document.getElementById('license-modal').classList.remove('hidden');
+        window.openLicenseModal = () => {
+            updateLicenseUI();
+            document.getElementById('license-modal').classList.remove('hidden');
+        };
         window.closeLicenseModal = () => document.getElementById('license-modal').classList.add('hidden');
         window.openInstallModal = () => document.getElementById('install-modal').classList.remove('hidden');
         window.closeInstallModal = () => document.getElementById('install-modal').classList.add('hidden');
